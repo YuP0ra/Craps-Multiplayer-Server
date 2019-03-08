@@ -8,11 +8,11 @@ def request(mode, header, msg):
 
 
 def send_data(client_socket, data_dict):
-    return client_socket.send(json.dumps(data_dict))
+    return client_socket.send(json.dumps(data_dict).encode('utf-8'))
 
 
 def recv_data(client_socket):
-    return json.loads(client_socket.recv(1024))
+    return json.loads(client_socket.recv(1024).decode('utf-8'))
 
 
 def main_thread(main_socket, data_base):
