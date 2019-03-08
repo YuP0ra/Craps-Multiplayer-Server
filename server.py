@@ -31,6 +31,7 @@ def handle_client(client_socket, address):
         try:
             # data = recv_data(client_socket)
             send_data(client_socket, {"time": time.time()})
+            time.sleep(0.1);
         except Exception as e:
             print("Client has been disconnected. IP: ", address)
             break
