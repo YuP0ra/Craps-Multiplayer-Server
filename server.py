@@ -12,7 +12,7 @@ def send_data(client_socket, data_dict):
 
 
 def recv_data(client_socket):
-    return json.loads(client_socket.recv(1024).decode('utf-8'))
+    return json.loads(client_socket.recv(1024))
 
 
 def main_thread(main_socket, data_base):
