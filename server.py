@@ -38,7 +38,7 @@ def handle_client_recieve(client_socket, address):
             data = recv_data(client_socket)
             print(data)
         except Exception as e:
-            break
+            print(e)
     print("Client has been disconnected. IP: ", address)
 
 
