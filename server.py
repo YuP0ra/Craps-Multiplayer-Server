@@ -20,7 +20,7 @@ def recv_data(client_socket):
         message += client_socket.recv(256)
         if len(message) == 0:
             return None
-    return message.decode()[:-5]
+    return json.load(message.decode()[:-5])
 
 
 def main_thread(main_socket, data_base):
@@ -36,9 +36,10 @@ def handle_client_recieve(client_socket, address):
     while True:
         try:
             data = recv_data(client_socket)
-            print(data)
+            print("Recieved: ", data)
         except Exception as e:
             print(e)
+
     print("Client has been disconnected. IP: ", address)
 
 
