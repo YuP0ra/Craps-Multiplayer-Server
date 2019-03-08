@@ -33,5 +33,5 @@ def handle_client(client_socket, address):
             print("Client has been disconnected. IP: ", address)
             break
 
-        print(data["MSG"] if "MSG" in data else data)
+        print(data)
         send_data(client_socket, data)
