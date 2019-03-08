@@ -24,12 +24,13 @@ def main_thread(main_socket, data_base):
 def handle_client(client_socket, address):
     ''' welcome msg is sent to inform the client that he has been connected successfully '''
     send_data(client_socket, request("POST", "LOGIN", "success"))
+    print("Client has connected. IP: ", address)
 
     while True:
         try:
             data = recv_data(client_socket)
         except Exception as e:
-            break 
+            break
 
         print(data["MSG"])
         send_data(client_socket, data)
