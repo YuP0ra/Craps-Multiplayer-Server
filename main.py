@@ -1,9 +1,11 @@
 import threading
 import database
 import server
+import socket
 import time
 
-HOSTNAME, PORT = "127.0.0.1", 4466
+HOSTNAME, PORT = "127.0.0.1", 4466      #35.198.95.100
+
 
 if __name__ == '__main__':
     DATABASE = database.Database()
@@ -12,6 +14,7 @@ if __name__ == '__main__':
     SERVER.bind((HOSTNAME, PORT))
     SERVER.listen(5)
 
-    ACCEPT_THREAD = threading.Thread(target=main_thread, args=(SERVER, DATABASE))
+    ACCEPT_THREAD = threading.Thread(target=server.main_thread, args=(SERVER, DATABASE))
     ACCEPT_THREAD.start()
+    print("Main thred is on.")
     ACCEPT_THREAD.join()
