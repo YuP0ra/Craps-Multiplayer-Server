@@ -26,6 +26,10 @@ def handle_client(client_socket, address):
     send_data(client_socket, request("POST", "LOGIN", "success"))
 
     while True:
-        data = recv_data(client_socket)
+        try:
+            data = recv_data(client_socket)
+        except Exception as e:
+            break 
+
         print(data["MSG"])
         send_data(client_socket, data)
