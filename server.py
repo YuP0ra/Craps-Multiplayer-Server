@@ -1,3 +1,4 @@
+import time
 import json
 import socket
 import threading
@@ -28,7 +29,8 @@ def handle_client(client_socket, address):
 
     while True:
         try:
-            data = recv_data(client_socket)
+            # data = recv_data(client_socket)
+            send_data(client_socket, {"time": time.time()})
         except Exception as e:
             print("Client has been disconnected. IP: ", address)
             break
