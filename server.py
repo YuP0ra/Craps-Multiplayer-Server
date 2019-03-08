@@ -34,6 +34,3 @@ def handle_client(client_socket, address):
         except Exception as e:
             print("Client has been disconnected. IP: ", address)
             break
-
-        print(data)
-        send_data(client_socket, data)
