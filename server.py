@@ -20,7 +20,7 @@ def recv_data(client_socket):
         message += client_socket.recv(256)
         if len(message) == 0:
             return None
-    return json.loads(message.rstrip()[:-5].decode('utf8'))
+    return message.decode()[:-5]
 
 
 def main_thread(main_socket, data_base):
