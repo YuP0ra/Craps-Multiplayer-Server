@@ -30,7 +30,8 @@ def handle_client(client_socket, address):
         try:
             data = recv_data(client_socket)
         except Exception as e:
+            print("Client has been disconnected. IP: ", address)
             break
 
-        print(data["MSG"])
+        print(data["MSG"] if "MSG" in data else data)
         send_data(client_socket, data)
