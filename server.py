@@ -19,8 +19,8 @@ def recv_data(client_socket):
 def main_thread(main_socket, data_base):
     while True:
         client_socket, client_address = main_socket.accept()
-        threading.Thread(target=handle_client, args=(handle_client_recieve, client_address)).start()
-        threading.Thread(target=handle_client, args=(handle_client_send, client_address)).start()
+        threading.Thread(target=handle_client_recieve, args=(client_socket, client_address)).start()
+        threading.Thread(target=handle_client_send, args=(client_socket, client_address)).start()
 
 
 def handle_client_recieve(client_socket, address):
