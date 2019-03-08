@@ -19,19 +19,29 @@ def recv_data(client_socket):
 def main_thread(main_socket, data_base):
     while True:
         client_socket, client_address = main_socket.accept()
-        threading.Thread(target=handle_client, args=(client_socket, client_address)).start()
+        threading.Thread(target=handle_client, args=(handle_client_recieve, client_address)).start()
+        threading.Thread(target=handle_client, args=(handle_client_send, client_address)).start()
 
 
-def handle_client(client_socket, address):
-    ''' welcome msg is sent to inform the client that he has been connected successfully '''
-    send_data(client_socket, request("POST", "LOGIN", "success"))
+def handle_client_recieve(client_socket, address):
     print("Client has connected. IP: ", address)
 
     while True:
         try:
-            # data = recv_data(client_socket)
-            send_data(client_socket, {"time": time.time()})
-            time.sleep(0.1);
+            data = recv_data(client_socket)
+            print(data)
         except Exception as e:
             print("Client has been disconnected. IP: ", address)
+            break
+
+
+def handle_client_send(client_socket, address):
+    ''' welcome msg is sent to inform the client that he has been connected successfully '''
+    send_data(client_socket, request("POST", "LOGIN", "success"))
+
+    while True:
+        try:
+            send_data(client_socket, {"time": time.time()})
+            time.sleep(1);
+        except Exception as e:
             break
