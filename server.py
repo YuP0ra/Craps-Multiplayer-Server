@@ -16,11 +16,13 @@ def send_data(client_socket, data_dict):
 def recv_data(client_socket):
     """ Basiclly keep recieving until you reach the end of the orginial msg """
     message = ''
-    while not message.endswith('<EOF>'):
+    while not message.endswith(bytes('<EOF>', 'utf8')):
         message += client_socket.recv(256)
         if len(message) == 0:
             return None
-    return json.load(message.decode()[:-5])
+    message = message.decode()[:-5]
+    
+    return message
 
 
 def main_thread(main_socket, data_base):
