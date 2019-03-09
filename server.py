@@ -4,8 +4,8 @@ import socket
 import threading
 
 
-def request(mode, msg):
-    return {"MODE":mode, "MSG":msg}
+def request(TYPE, msg):
+    return {"TYPE":TYPE, "MSG":msg}
 
 
 def send_data(client_socket, data_dict):
@@ -56,15 +56,15 @@ def handle_client_send(client_socket, address):
     ''' welcome msg is sent to inform the client that he has been connected successfully '''
     if not send_data(client_socket, request("LOGIN", "success")) is None:
         while not send_data(client_socket, request("TIME", time.time())) is None:
-            time.sleep(5);
+            time.sleep(0.01);
 
 
 def main_request_handler(client_socket, request):
-    if not "MODE" in request:
+    if not "TYPE" in request:
         return
 
-    if request['MODE'] == "ECHO":
+    if request['TYPE'] == "ECHO":
         send_data(client_socket, request)
 
-    if request['MODE'] == "ROOMS":
+    if request['TYPE'] == "ROOMS":
         send_data(client_socket, request("ROOMS", [0, 0, 0, 0]))
