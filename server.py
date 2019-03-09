@@ -65,16 +65,6 @@ def main_request_handler(client_socket, request):
 
     if request['MODE'] == "ECHO":
         send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
-        send_data(client_socket, request)
 
     if request['MODE'] == "ROOMS":
         send_data(client_socket, request("ROOMS", [0, 0, 0, 0]))
