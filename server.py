@@ -45,7 +45,7 @@ def handle_client_recieve(client_socket, address):
         data = recv_data(client_socket)
         if data is None:                        # Connection is lost.
             break
-        main_request_handler(main_socket, data)
+        main_request_handler(client_socket, data)
     print("Client has disconnected. IP: ", address)
 
 
