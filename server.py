@@ -2,7 +2,6 @@ import time
 import json
 import socket
 import threading
-from CrapsGame import main_request_handler
 
 
 def request(mode, msg):
@@ -55,3 +54,14 @@ def handle_client_send(client_socket, address):
     if not send_data(client_socket, request("LOGIN", "success")) is None:
         while not send_data(client_socket, request("TIME", time.time())) is None:
             time.sleep(5);
+
+
+def main_request_handler(client_socket, request):
+    if not "MODE" in request:
+        return
+
+    if request['MODE'] == "ECHO":
+        send_data(client_socket, request)
+
+    if request['MODE'] == "ROOMS":
+        send_data(client_socket, request("ROOMS", [0, 0, 0, 0]))
