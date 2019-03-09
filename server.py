@@ -10,19 +10,25 @@ def request(mode, msg):
 
 def send_data(client_socket, data_dict):
     """ Convert the dict into json and append the EndOfFile mark """
-    return client_socket.send("{0}<EOF>".format(json.dumps(data_dict)).encode('utf-8'))
+    json_form = json.dumps(data_dict)
+    valid_socket_form = "{0}<EOF>".format(json_form)
+    valid_socket_form_bytes = valid_socket_form.encode('ascii')
+    bytes_sent = client_socket.send(valid_socket_form_bytes)
+    return None if bytes_sent <= 0 else bytes_sent
 
 
 def recv_data(client_socket):
-    """ Basiclly keep recieving until you reach the end of the orginial msg """
-    message = ''
-    while not message.endswith(bytes('<EOF>', 'utf8')):
-        message += client_socket.recv(256)
-        if len(message) == 0:
-            return None
-    message = message.decode()[:-5]
-    
-    return message
+    """ This function will return a list of valid socket segments transmitted over the network """
+
+    frame, eof = bytes('', 'ascii'), '<EOF>'
+    try:
+        while not frame.endswith(bytes(eof, 'ascii')):
+            frame += client_socket.recv(256)
+    except Exception as e:
+        return None
+
+    string_frames = [f for f in frame.decode('ascii').split(eof) if len(f) > 0]
+    return string_frames
 
 
 def main_thread(main_socket, data_base):
@@ -30,28 +36,19 @@ def main_thread(main_socket, data_base):
         client_socket, client_address = main_socket.accept()
         threading.Thread(target=handle_client_recieve, args=(client_socket, client_address)).start()
         threading.Thread(target=handle_client_send, args=(client_socket, client_address)).start()
-    print("Exiting Server")
 
 
 def handle_client_recieve(client_socket, address):
     print("Client has connected. IP: ", address)
     while True:
-        try:
-            data = recv_data(client_socket)
-            print("Recieved: ", data)
-        except Exception as e:
-            print(e)
-
-    print("Client has been disconnected. IP: ", address)
+        data = recv_data(client_socket)
+        if data is None:                        # Connection is lost.
+            break;
+        print("Recieved: ", data)
 
 
 def handle_client_send(client_socket, address):
     ''' welcome msg is sent to inform the client that he has been connected successfully '''
-    send_data(client_socket, request("LOGIN", "success"))
-
-    while True:
-        try:
-            send_data(client_socket, {"time": time.time()})
+    if not send_data(client_socket, request("LOGIN", "success")) is None:
+        while not send_data(client_socket, request("TIME", time.time())) is None:
             time.sleep(5);
-        except Exception as e:
-            break

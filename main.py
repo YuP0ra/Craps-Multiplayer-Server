@@ -4,7 +4,7 @@ import server
 import socket
 import time
 
-HOSTNAME, PORT = "0.0.0.0", 4466      #35.198.95.100
+HOSTNAME, PORT = "127.0.0.1", 4466      #35.198.95.100
 
 
 if __name__ == '__main__':
