@@ -1,8 +1,6 @@
-class Room:
-    def __init__(self, room_name, min_bet, max_bet):
-        self.room_name = room_name
-        self.min_bet = min_bet
-        self.max_bet = max_bet
+from server import send_data
 
-    def add_user(self, user)
-        pass
+def main_request_handler(user, request):
+    if "MODE" in request:
+        if request['MODE'] == "ECHO":
+            send_data(user, request)

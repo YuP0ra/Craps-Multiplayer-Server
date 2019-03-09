@@ -2,6 +2,7 @@ import time
 import json
 import socket
 import threading
+from CrapsGame import main_request_handler
 
 
 def request(mode, msg):
@@ -28,7 +29,7 @@ def recv_data(client_socket):
     except Exception as e:
         return None
 
-    string_frames = [f for f in frame.decode('ascii').split(eof) if len(f) > 0]
+    string_frames = [json.loads(f) for f in frame.decode('ascii').split(eof) if len(f) > 0]
     return string_frames
 
 
@@ -44,8 +45,8 @@ def handle_client_recieve(client_socket, address):
     while True:
         data = recv_data(client_socket)
         if data is None:                        # Connection is lost.
-            break;
-        print("Recieved: ", data)
+            break
+        main_request_handler(main_socket, data)
     print("Client has disconnected. IP: ", address)
 
 
