@@ -45,7 +45,7 @@ def handle_client_recieve(client_socket, address):
         data_segments = recv_data(client_socket)
         if data_segments is None:                        # Connection is lost.
             break
-            
+
         for data in data_segments:
             main_request_handler(client_socket, data)
 
@@ -64,6 +64,16 @@ def main_request_handler(client_socket, request):
         return
 
     if request['MODE'] == "ECHO":
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
+        send_data(client_socket, request)
         send_data(client_socket, request)
 
     if request['MODE'] == "ROOMS":
