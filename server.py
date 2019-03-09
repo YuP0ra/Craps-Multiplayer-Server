@@ -10,11 +10,10 @@ def request(TYPE, msg):
 
 def send_data(client_socket, data_dict):
     """ Convert the dict into json and append the EndOfFile mark """
-    json_form = json.dumps(data_dict)
-    valid_socket_form = "{0}<EOF>".format(json_form)
-    valid_socket_form_bytes = valid_socket_form.encode('ascii')
+    json_form = json.dumps(data_dict) + "<EOF>"
+    valid_socket_form = json_form.encode('ascii')
     try:
-        return client_socket.send(valid_socket_form_bytes)
+        return client_socket.send(valid_socket_form)
     except Exception as e:
         return None
 
@@ -28,7 +27,12 @@ def recv_data(client_socket):
     except Exception as e:
         return None
 
-    string_frames = [json.loads(f) for f in frame.decode('ascii').split(eof) if len(f) > 0]
+    string_frames = []
+    for single_frame in frame.decode('ascii').split(eof):
+        try:
+            string_frames.append(json.loads(single_frame))
+        except Exception as e:
+            continue
     return string_frames
 
 
