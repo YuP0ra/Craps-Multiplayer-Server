@@ -13,9 +13,10 @@ def send_data(client_socket, data_dict):
     json_form = json.dumps(data_dict)
     valid_socket_form = "{0}<EOF>".format(json_form)
     valid_socket_form_bytes = valid_socket_form.encode('ascii')
-    bytes_sent = client_socket.send(valid_socket_form_bytes)
-    return None if bytes_sent <= 0 else bytes_sent
-
+    try:
+        return client_socket.send(valid_socket_form_bytes)
+    except Exception as e:
+        return None
 
 def recv_data(client_socket):
     """ This function will return a list of valid socket segments transmitted over the network """
@@ -45,6 +46,7 @@ def handle_client_recieve(client_socket, address):
         if data is None:                        # Connection is lost.
             break;
         print("Recieved: ", data)
+    print("Client has disconnected. IP: ", address)
 
 
 def handle_client_send(client_socket, address):
