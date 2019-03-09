@@ -42,10 +42,13 @@ def main_thread(main_socket, data_base):
 def handle_client_recieve(client_socket, address):
     print("Client has connected. IP: ", address)
     while True:
-        data = recv_data(client_socket)
-        if data is None:                        # Connection is lost.
+        data_segments = recv_data(client_socket)
+        if data_segments is None:                        # Connection is lost.
             break
-        main_request_handler(client_socket, data)
+            
+        for data in data_segments:
+            main_request_handler(client_socket, data)
+
     print("Client has disconnected. IP: ", address)
 
 
