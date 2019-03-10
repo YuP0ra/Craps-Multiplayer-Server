@@ -46,18 +46,6 @@ class Player(Thread):
         quit()
 
 
-    def process_request(self, request):
-        if not 'TYPE' in request: return
-
-        if request['TYPE'] == "PLAYER_INFO":
-            print("Player ", request['NAME'], "is now in the lobby")
-            self._player_name = request['NAME']
-
-        if request['TYPE'] == "JOIN_ROOM":
-            pass
-
-
-
     def send_data(self, data_dict):
         """ Convert the dict into json and append the EndOfFile mark """
 
@@ -99,3 +87,20 @@ class Player(Thread):
             except Exception as e:
                 continue
         return string_frames
+
+
+    def process_request(self, request):
+        if not 'TYPE' in request: return
+
+        if request['TYPE'] == "PLAYER_INFO":
+            print("Player ", request['NAME'], "is now in the lobby")
+            self._player_name = request['NAME']
+            return
+
+        if request['TYPE'] == "ECHO":
+            request['SERVER_EXTRA'] = time.ctime()
+            self.send_data(request)
+            return
+
+        if request['TYPE'] == "JOIN_ROOM":
+            pass
