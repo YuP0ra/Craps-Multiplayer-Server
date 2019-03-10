@@ -33,7 +33,7 @@ class Player(Thread):
 
 
     def on_client_connect(self,):
-        self.send_data({"TYPE": "GET_PLAYER_INFO", "MSG": "Server is asking you to send your info. username, userID and accessToken"})
+        self.send_data({"TYPE": "CONNECTED", "SERVER_ID": self._server_id})
 
 
     def on_client_timeout(self,):
