@@ -13,7 +13,7 @@ def send_data(client_socket, data_dict):
     json_form = json.dumps(data_dict) + "<EOF>"
     valid_socket_form = json_form.encode('ascii')
     try:
-        return client_socket.send(valid_socket_form)
+        return client_socket.sendall(valid_socket_form)
     except Exception as e:
         return None
 
@@ -23,7 +23,9 @@ def recv_data(client_socket):
     frame, eof = bytes('', 'ascii'), '<EOF>'
     try:
         while not frame.endswith(bytes(eof, 'ascii')):
-            frame += client_socket.recv(256)
+            tmp_frame = client_socket.recv(1024)
+            if not tmp_frame: break
+            frame += tmp_frame
     except Exception as e:
         return None
 

@@ -1,20 +1,14 @@
-import threading
-import database
-import server
+from CrapsServer import Player
 import socket
-import time
 
-HOSTNAME, PORT = "0.0.0.0", 4466      #35.198.95.100
-
-
+HOSTNAME, PORT = "0.0.0.0", 4466
 if __name__ == '__main__':
-    DATABASE = database.Database()
-
     SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     SERVER.bind((HOSTNAME, PORT))
     SERVER.listen(5)
 
-    ACCEPT_THREAD = threading.Thread(target=server.main_thread, args=(SERVER, DATABASE))
-    ACCEPT_THREAD.start()
-    print("Main thred is on.")
-    ACCEPT_THREAD.join()
+    print("Server started on main thread")
+    while True:
+        client_socket, client_address = SERVER.accept()
+        print("New IP: %s" % client_address[0])
+        Player(client_socket).start()
