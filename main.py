@@ -1,12 +1,21 @@
-from CrapsServer import Player
-import socket
+from libs import Player, Room
+import database, socket, json
 
 HOSTNAME, PORT = "0.0.0.0", 4466
+
 if __name__ == '__main__':
+    """ ################ Setting up the socket ################ """
     SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     SERVER.bind((HOSTNAME, PORT))
     SERVER.listen(5)
 
+
+    """ ################ Setting up the rooms ################ """
+    for server_id in range(len(database.rooms_name)):
+        Room(server_id, database.rooms_name[server_id], 5, database.rooms_min_bet[server_id], database.rooms_max_bet[server_id]).start()
+
+
+    """ ################ firing up the server ################ """
     print("Server started on main thread")
     while True:
         client_socket, client_address = SERVER.accept()
