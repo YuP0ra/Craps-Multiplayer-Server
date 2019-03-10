@@ -65,6 +65,11 @@ class Room(Thread):
             self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_JOIN"} + player.player_info)
 
 
+    def remove_player(self, player):
+        self._plaers.remove(player)
+        self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_LEFT"} + player.player_info)
+
+
 
 class Player(Thread):
     PLAYER_ID = 0
@@ -160,7 +165,6 @@ class Player(Thread):
         if not 'TYPE' in request: return
 
         if request['TYPE'] == "PLAYER_INFO":
-            print("Player ", request['NAME'], "is now in the lobby")
             self._player_name = request['NAME']
             return
 
