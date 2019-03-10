@@ -20,6 +20,11 @@ class Player(Thread):
         self._player_name   = None
 
 
+    @property
+    def player_info(self,):
+        return {"NAME":str(self._player_name) ,"SERVER_ID":str(self._server_id) ,"MONEY":"50000"}
+
+
     def run(self,):
         self.on_client_connect()
         while True:
