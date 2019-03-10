@@ -17,6 +17,8 @@ class Player(Thread):
         self._socket        = socket
         self.request_queue  = []
 
+        self._player_name   = None
+
 
     def run(self,):
         self.on_client_connect()
@@ -35,20 +37,21 @@ class Player(Thread):
 
 
     def on_client_timeout(self,):
-        self.send_data({"TYPE": "GET_PLAYER_INFO", "MSG": "Server is asking you to send your info. username, userID and accessToken"})
+        if self._player_name is None:
+            self.send_data({"TYPE": "GET_PLAYER_INFO", "MSG": "Server is asking you to send your info. username, userID and accessToken"})
 
 
     def on_client_disconnect(self,):
         print("CLIENT ID:%s HAS DISCONNECTED" % (self._server_id))
-        del self
+        quit()
 
 
     def process_request(self, request):
         if not 'TYPE' in request: return
 
         if request['TYPE'] == "PLAYER_INFO":
-            pass
-
+            print("Player ", request['NAME'], "is now in the lobby")
+            self._player_name = request['NAME']
 
         if request['TYPE'] == "JOIN_ROOM":
             pass
