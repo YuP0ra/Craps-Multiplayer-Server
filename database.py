@@ -26,6 +26,6 @@ def get_rooms_full_info():
 
 def get_rooms_active_players_info():
     return {
-            "TYPE"  : "FULL_ROOMS_INFO",
+            "TYPE"  : "ACTIVIY_ROOMS_INFO",
             "ACTIVE": rooms_active_players
             }
