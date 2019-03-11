@@ -18,10 +18,10 @@ rooms_active_players = [0] * len(config_file['rooms_name'])
 def get_rooms_full_info():
     return {
             "TYPE"  : "FULL_ROOMS_INFO",
-            "NAMES" : [rooms_name],
-            "MINBET": [rooms_min_bet],
-            "MAXBET": [rooms_max_bet],
-            "ACTIVE": [rooms_active_players]
+            "NAMES" : rooms_name,
+            "MINBET": rooms_min_bet,
+            "MAXBET": rooms_max_bet,
+            "ACTIVE": rooms_active_players
             }
 
 def get_rooms_active_players_info():
