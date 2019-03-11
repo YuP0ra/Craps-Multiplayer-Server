@@ -162,6 +162,8 @@ class Player(Thread):
 
 
     def process_request(self, request):
+        print(request)
+        
         if not 'TYPE' in request: return
 
         if request['TYPE'] == "PLAYER_INFO":
