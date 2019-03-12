@@ -19,7 +19,7 @@ class Room(Thread):
     def __init__(self, name, capacity, min_bet, max_bet):
         Thread.__init__(self)
         self._counter       = -1
-        self._players        = []
+        self._players       = []
 
         self.name           = name
         self.min_bet        = min_bet
@@ -54,6 +54,7 @@ class Room(Thread):
     def add_player(self, player):
         if len(self._players) < self.capacity and player not in self._players:
             self._players.append(player)
+            player._joined_rooms.append(self)
             database.rooms_active_players[database.rooms_name.index(self.name)] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"You've entered the room"})
         else:
@@ -72,7 +73,9 @@ class Player(Thread):
     def __init__(self, socket, matcher):
         Thread.__init__(self)
 
-        Player.PLAYER_ID += 1
+        Player.PLAYER_ID   += 1
+        self._joined_rooms  = []
+
         socket.settimeout(5)
 
         self._server_id     = Player.PLAYER_ID
@@ -112,7 +115,10 @@ class Player(Thread):
 
     def on_client_disconnect(self,):
         print("CLIENT ID:%s HAS DISCONNECTED" % (self._server_id))
-        del self
+        for room in self._joined_rooms:
+            del room._players[room._players.index(self)]
+            database.rooms_active_players[database.rooms_name.index(room.name)] = len(room._players)
+
         quit()
 
 
