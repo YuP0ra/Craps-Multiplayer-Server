@@ -19,7 +19,7 @@ class Room(Thread):
     def __init__(self, name, capacity, min_bet, max_bet):
         Thread.__init__(self)
         self._counter       = -1
-        self._plaers        = []
+        self._players        = []
 
         self.name           = name
         self.min_bet        = min_bet
@@ -30,7 +30,7 @@ class Room(Thread):
     def run(self,):
         while True:
             time.sleep(1)
-            if len(self._plaers) == 0: continue
+            if len(self._players) == 0: continue
 
             self.broadcast_event({"TYPE":"ROOM_CLOCK", "CLOCK":self.clock})
 
