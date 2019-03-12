@@ -50,7 +50,7 @@ class Room(Thread):
     def add_player(self, player):
         if len(self._plaers) < self.capacity:
             self._plaers.append(player)
-            room_index = database.rooms_active_players[database.rooms_name.index(self.name)] += 1
+            database.rooms_active_players[database.rooms_name.index(self.name)] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"You've entered the room"})
             self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_JOIN"} + player.player_info)
         else:
