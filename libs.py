@@ -33,7 +33,7 @@ class Room(Thread):
             if len(self._players) == 0:
                 continue
             else:
-                database.rooms_active_players[self.rooms_name.index(self.name)] = len(self._players)
+                database.rooms_active_players[database.rooms_name.index(self.name)] = len(self._players)
 
             for player in self._players:
                 player.send_data({"TYPE":"ROOM_CLOCK", "CLOCK":self.clock})
