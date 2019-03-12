@@ -5,29 +5,19 @@ import time, json, database
 
 class Matcher:
     def __init__(self,):
-        self._room_id_dict = {}
-        self._room_name_dict = {}
+        self._rooms_dict = {}
 
-    def add_room(room_name, room_id, room_instance):
-        self._room_id_dict[room_id] = room_instance
-        self._room_name_dict[room_name] = room_instance
-
-
-    def match_by_room_id(self, room_id, player):
-        self._room_id_dict[room_id].add_player(player)
+    def add_room(room):
+        self._rooms_dict[room.name] = room
 
     def match_by_room_name(self, room_name, player):
-        self._room_name_dict[room_name].add_player(player)
+        self._rooms_dict[room_name].add_player(player)
 
 
 
 class Room(Thread):
-    ROOM_ID = 100
-    def __init__(self, server_id, name, capacity, min_bet, max_bet):
+    def __init__(self, name, capacity, min_bet, max_bet):
         Thread.__init__(self)
-        Room.ROOM_ID        += 1
-        Room.SERVER_ID      = server_id
-
         self._counter       = -1
         self._plaers        = []
 
@@ -43,7 +33,6 @@ class Room(Thread):
             if len(self._plaers) == 0: continue
 
             self.broadcast_event({"TYPE":"ROOM_CLOCK", "CLOCK":self.clock})
-            print("EVENT SENT TO ALL PLAYERS")
 
 
     @property
@@ -61,8 +50,11 @@ class Room(Thread):
     def add_player(self, player):
         if len(self._plaers) < self.capacity:
             self._plaers.append(player)
-            player.send_data({"TYPE":"ROOM_JOINED", "ROOM_NAME":"DUMMY DATA"})
+            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"DUMMY DATA"})
             self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_JOIN"} + player.player_info)
+        else
+            player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
+
 
 
     def remove_player(self, player):
@@ -72,7 +64,7 @@ class Room(Thread):
 
 
 class Player(Thread):
-    PLAYER_ID = 0
+    PLAYER_ID = -1
     def __init__(self, socket):
         Thread.__init__(self)
 
@@ -105,7 +97,7 @@ class Player(Thread):
 
 
     def on_client_connect(self,):
-        self.send_data({"TYPE": "CONNECTED", "SERVER_ID": self._server_id})
+        self.send_data({"TYPE": "CONNECTED", "SERVER_ID": str(self._server_id)})
 
 
     def on_client_timeout(self,):
@@ -162,8 +154,6 @@ class Player(Thread):
 
 
     def process_request(self, request):
-        print(request)
-        
         if not 'TYPE' in request: return
 
         if request['TYPE'] == "PLAYER_INFO":
