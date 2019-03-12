@@ -42,14 +42,14 @@ class Room(Thread):
 
 
     def broadcast_event(self, sender, json_frame):
-        for player in self._plaers:
+        for player in self._players:
             if not sender == player:
                 player.send_data(json_frame)
 
 
     def add_player(self, player):
-        if len(self._plaers) < self.capacity:
-            self._plaers.append(player)
+        if len(self._players) < self.capacity:
+            self._players.append(player)
             database.rooms_active_players[database.rooms_name.index(self.name)] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"You've entered the room"})
             self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_JOIN"} + player.player_info)
@@ -59,7 +59,7 @@ class Room(Thread):
 
 
     def remove_player(self, player):
-        self._plaers.remove(player)
+        self._players.remove(player)
         self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_LEFT"} + player.player_info)
 
 
@@ -168,7 +168,7 @@ class Player(Thread):
             return
 
         if request['TYPE'] == "JOIN_ROOM_REQUEST":
-            self._matcher.match_by_room_name(request['ROOM_NAME'], request['PLAYER_ID'])
+            self._matcher.match_by_room_name(request['ROOM_NAME'], self)
 
         if request['TYPE'] == "ROOMS_FULL_INFO":
             self.send_data(database.get_rooms_full_info())
