@@ -115,7 +115,7 @@ class Player(Thread):
 
     def on_client_disconnect(self,):
         print("CLIENT ID:%s HAS DISCONNECTED" % (self._server_id))
-        del room._players[self._joined_room._players.index(self)]
+        del self._joined_room._players[self._joined_room._players.index(self)]
         database.rooms_active_players[database.rooms_name.index(self._joined_room.name)] = len(self._joined_room._players)
         self._joined_room = None
         quit()
