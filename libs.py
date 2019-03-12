@@ -115,9 +115,9 @@ class Player(Thread):
 
     def on_client_disconnect(self,):
         print("CLIENT ID:%s HAS DISCONNECTED" % (self._server_id))
-        del self._joined_room._players[self._joined_room._players.index(self)]
-        database.rooms_active_players[database.rooms_name.index(self._joined_room.name)] = len(self._joined_room._players)
-        self._joined_room = None
+        if self._joined_room is not None:
+            del self._joined_room._players[self._joined_room._players.index(self)]
+            database.rooms_active_players[database.rooms_name.index(self._joined_room.name)] = len(self._joined_room._players)
         quit()
 
 
@@ -179,6 +179,12 @@ class Player(Thread):
         if request['TYPE'] == "JOIN_ROOM_REQUEST":
             if self._joined_room is None:
                 self._matcher.match_by_room_name(request['ROOM_NAME'], self)
+
+        if request['TYPE'] == "LEAVE_ROOM_REQUEST":
+            if not self._joined_room is None:
+                del self._joined_room._players[self._joined_room._players.index(self)]
+                database.rooms_active_players[database.rooms_name.index(self._joined_room.name)] = len(self._joined_room._players)
+                self._joined_room = None
 
         if request['TYPE'] == "ROOMS_FULL_INFO":
             self.send_data(database.get_rooms_full_info())
