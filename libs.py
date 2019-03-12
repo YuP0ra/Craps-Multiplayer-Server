@@ -54,7 +54,7 @@ class Room(Thread):
     def add_player(self, player):
         if len(self._players) < self.capacity and player not in self._players:
             self._players.append(player)
-            player._joined_rooms.append(self)
+            player._joined_room = self
             database.rooms_active_players[database.rooms_name.index(self.name)] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"You've entered the room"})
         else:
@@ -74,7 +74,7 @@ class Player(Thread):
         Thread.__init__(self)
 
         Player.PLAYER_ID   += 1
-        self._joined_rooms  = []
+        self._joined_room   = []
 
         socket.settimeout(5)
 
@@ -115,10 +115,9 @@ class Player(Thread):
 
     def on_client_disconnect(self,):
         print("CLIENT ID:%s HAS DISCONNECTED" % (self._server_id))
-        for room in self._joined_rooms:
-            del room._players[room._players.index(self)]
-            database.rooms_active_players[database.rooms_name.index(room.name)] = len(room._players)
-
+        del room._players[self._joined_room._players.index(self)]
+        database.rooms_active_players[database.rooms_name.index(self._joined_room.name)] = len(self._joined_room._players)
+        self._joined_room = None
         quit()
 
 
@@ -178,7 +177,8 @@ class Player(Thread):
             return
 
         if request['TYPE'] == "JOIN_ROOM_REQUEST":
-            self._matcher.match_by_room_name(request['ROOM_NAME'], self)
+            if self._joined_room is None:
+                self._matcher.match_by_room_name(request['ROOM_NAME'], self)
 
         if request['TYPE'] == "ROOMS_FULL_INFO":
             self.send_data(database.get_rooms_full_info())
