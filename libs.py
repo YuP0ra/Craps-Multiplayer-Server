@@ -32,7 +32,8 @@ class Room(Thread):
             time.sleep(1)
             if len(self._players) == 0: continue
 
-            self.broadcast_event({"TYPE":"ROOM_CLOCK", "CLOCK":self.clock})
+            for player in self._players:
+                player.send_data({"TYPE":"ROOM_CLOCK", "CLOCK":self.clock})
 
 
     @property
@@ -48,7 +49,7 @@ class Room(Thread):
 
 
     def add_player(self, player):
-        if len(self._players) < self.capacity:
+        if len(self._players) < self.capacity and player not in self._players:
             self._players.append(player)
             database.rooms_active_players[database.rooms_name.index(self.name)] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"You've entered the room"})
