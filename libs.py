@@ -7,7 +7,7 @@ class Matcher:
     def __init__(self,):
         self._rooms_dict = {}
 
-    def add_room(room):
+    def add_room(self, room):
         self._rooms_dict[room.name] = room
 
     def match_by_room_name(self, room_name, player):

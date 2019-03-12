@@ -13,7 +13,7 @@ if __name__ == '__main__':
     """ ################ Setting up the rooms ################ """
     matcher = Matcher()
     for server_id in range(len(database.rooms_name)):
-        room = Room(server_id, database.rooms_name[server_id], 5, database.rooms_min_bet[server_id], database.rooms_max_bet[server_id])
+        room = Room(database.rooms_name[server_id], 5, database.rooms_min_bet[server_id], database.rooms_max_bet[server_id])
         matcher.add_room(room)
         room.start()
 
