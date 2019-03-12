@@ -52,7 +52,7 @@ class Room(Thread):
             self._plaers.append(player)
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"DUMMY DATA"})
             self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_JOIN"} + player.player_info)
-        else
+        else:
             player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
 
 
