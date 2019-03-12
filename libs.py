@@ -50,7 +50,8 @@ class Room(Thread):
     def add_player(self, player):
         if len(self._plaers) < self.capacity:
             self._plaers.append(player)
-            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"DUMMY DATA"})
+            room_index = database.rooms_active_players[database.rooms_name.index(self.name)] += 1
+            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":"You've entered the room"})
             self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_JOIN"} + player.player_info)
         else:
             player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
@@ -65,18 +66,19 @@ class Room(Thread):
 
 class Player(Thread):
     PLAYER_ID = -1
-    def __init__(self, socket):
+    def __init__(self, socket, matcher):
         Thread.__init__(self)
 
         Player.PLAYER_ID += 1
         socket.settimeout(5)
 
         self._server_id     = Player.PLAYER_ID
-        self._player_id     = None
+        self._matcher       = matcher
         self._socket        = socket
         self.request_queue  = []
 
         self._player_name   = None
+        self._player_id     = None
 
 
     @property
@@ -165,8 +167,8 @@ class Player(Thread):
             self.send_data(request)
             return
 
-        if request['TYPE'] == "JOIN_ROOM":
-            pass
+        if request['TYPE'] == "JOIN_ROOM_REQUEST":
+            self._matcher.match_by_room_name(request['ROOM_NAME'], request['PLAYER_ID'])
 
         if request['TYPE'] == "ROOMS_FULL_INFO":
             self.send_data(database.get_rooms_full_info())

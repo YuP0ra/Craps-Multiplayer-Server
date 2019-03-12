@@ -23,4 +23,4 @@ if __name__ == '__main__':
     while True:
         client_socket, client_address = SERVER.accept()
         print("New IP: %s" % client_address[0])
-        Player(client_socket).start()
+        Player(client_socket, matcher).start()
