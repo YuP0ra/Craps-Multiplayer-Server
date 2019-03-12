@@ -112,7 +112,7 @@ class Player(Thread):
 
     def on_client_disconnect(self,):
         print("CLIENT ID:%s HAS DISCONNECTED" % (self._server_id))
-        del this
+        del self
         quit()
 
 
