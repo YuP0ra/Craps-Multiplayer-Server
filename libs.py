@@ -74,7 +74,7 @@ class Player(Thread):
         Thread.__init__(self)
 
         Player.PLAYER_ID   += 1
-        self._joined_room   = []
+        self._joined_room   = None
 
         socket.settimeout(5)
 
