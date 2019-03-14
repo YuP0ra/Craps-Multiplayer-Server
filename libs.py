@@ -1,6 +1,6 @@
-from socket import timeout
+import time, json, database, secrets
 from threading import Thread
-import time, json, database
+from socket import timeout
 
 
 class Matcher:
@@ -61,7 +61,6 @@ class Room(Thread):
             player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
 
 
-
     def remove_player(self, player):
         self._players.remove(player)
         self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_LEFT"} + player.player_info)
@@ -69,27 +68,37 @@ class Room(Thread):
 
 
 class Player(Thread):
-    PLAYER_ID = -1
+    PLAYER_ID = 0
     def __init__(self, socket, matcher):
         Thread.__init__(self)
-
-        Player.PLAYER_ID   += 1
-        self._joined_room   = None
-
         socket.settimeout(5)
 
+        """ Server side data """
+        Player.PLAYER_ID   += 1
+        self._joined_room   = None
         self._server_id     = Player.PLAYER_ID
+
         self._matcher       = matcher
         self._socket        = socket
         self.request_queue  = []
 
+        """ Player info data """
+        self._token         = secrets.token_hex(32)
         self._player_name   = None
-        self._player_id     = None
+        self._money         = 50000
 
 
-    @property
-    def player_info(self,):
-        return {"NAME":str(self._player_name) ,"SERVER_ID":str(self._server_id) ,"MONEY":"50000"}
+    def __eq__(self, other):
+        return str(self._token) == str(other._token)
+
+
+    def player_info(self, type="PLAYER_INFO"):
+        return {"TYPE"      :str(type),
+                "NAME"      :str(self._player_name) ,
+                "SERVER_ID" :str(self._server_id),
+                "TOKEN"     :str(self._token),
+                "MONEY"     :str(self._money)
+                }
 
 
     def run(self,):
@@ -105,12 +114,15 @@ class Player(Thread):
 
 
     def on_client_connect(self,):
-        self.send_data({"TYPE": "CONNECTED", "SERVER_ID": str(self._server_id)})
+        self.send_data({"TYPE"      :"CONNECTED",
+                        "SERVER_ID" :str(self._server_id),
+                        "TOKEN"     :str(self._token),
+                        })
 
 
     def on_client_timeout(self,):
         if self._player_name is None:
-            self.send_data({"TYPE": "GET_PLAYER_INFO", "MSG": "Server is asking you to send your info. username, userID and accessToken"})
+            self.send_data({"TYPE": "GET_PLAYER_INFO"})
 
 
     def on_client_disconnect(self,):
@@ -131,7 +143,6 @@ class Player(Thread):
         except Exception as e:
             self.on_client_disconnect()
             return None
-
 
     def recv_data(self,):
         """ This function will return a list of valid socket segments transmitted over the network """
@@ -169,11 +180,8 @@ class Player(Thread):
 
         if request['TYPE'] == "PLAYER_INFO":
             self._player_name = request['NAME']
-            return
-
-        if request['TYPE'] == "ECHO":
-            request['SERVER_EXTRA'] = time.ctime()
-            self.send_data(request)
+            self._token = request['TOKEN']
+            self._money = request['MONEY']
             return
 
         if request['TYPE'] == "JOIN_ROOM_REQUEST":
