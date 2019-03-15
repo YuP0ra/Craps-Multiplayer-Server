@@ -74,10 +74,7 @@ class RemoteClient(Thread):
         self._kernel    = kernel
 
         self.address    = address
-        self.token      = RemoteClient.RemoteClientID
-
-    def __eq__(self, other):
-        pass
+        self.TOKEN      = RemoteClient.RemoteClientID
 
     def run(self,):
         self.on_client_connect()
