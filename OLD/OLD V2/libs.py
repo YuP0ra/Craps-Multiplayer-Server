@@ -6,12 +6,20 @@ from socket import timeout
 class Matcher:
     def __init__(self,):
         self._rooms_dict = {}
+        self._token_dict = {}
+
 
     def add_room(self, room):
         self._rooms_dict[room.name] = room
 
+
     def match_by_room_name(self, room_name, player):
-        self._rooms_dict[room_name].add_player(player)
+        if player._token in self._token_dict:
+            self._token_dict[player._token].activate(player)
+        else:
+            if self._rooms_dict[room_name].add_player(player):
+                self._token_dict[player._token] = self._rooms_dict[room_name]
+
 
 
 
@@ -32,8 +40,6 @@ class Room(Thread):
             time.sleep(1)
             if len(self._players) == 0:
                 continue
-            else:
-                database.rooms_active_players[database.rooms_name.index(self.name)] = len(self._players)
 
             for player in self._players:
                 player.send_data({"TYPE":"ROOM_CLOCK", "CLOCK":self.clock})
@@ -57,13 +63,24 @@ class Room(Thread):
             player._joined_room = self
             database.rooms_active_players[database.rooms_name.index(self.name)] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":str(self.name)})
+            return True
         else:
             player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
 
 
+    def activate_player(self, player):
+        pass
+
+
+    def suspend_player(self, player):
+        pass
+
+
     def remove_player(self, player):
         self._players.remove(player)
-        self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_LEFT"} + player.player_info)
+        database.set_room_active_players(self.name, len(self._players))
+        self.broadcast_event(player, {"TYPE":"ROOM_PLAYER_LEFT", "PLAYER_ID": player._server_id})
+
 
 
 
