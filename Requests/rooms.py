@@ -9,8 +9,6 @@ with open('Statics/roomsInfo.json') as json_file:
 
 """ ####################### Initializing Rooms ####################### """
 playersTokensDict = {}                  #"{TOKEN}: (socket, room, status)
-
-
 def run():
     while True:
         initTime = time.time()
@@ -38,6 +36,12 @@ def getRoomsActivePlayers():
             }
 
 
+""" ####################### Requests Handling ####################### """
+
+def onConnectionEnded(client):
+    if client.TOKEN in playersTokensDict:
+        playersTokensDict[client.TOKEN][2] = False
+
 def ROOMS_FULL_INFO(player, request):
     player.send_data(getRoomsFullInfo())
 
@@ -52,7 +56,7 @@ def JOIN_ROOM_REQUEST(player, request):
     if not player.TOKEN in playersTokensDict:           # The player is not in a room
         if roomsActivity[roomIndex] < ROOM_CAPACITY:
             """ Here we assign a player a room. socket,    room_name,      isActive """
-            playersTokensDict[player.TOKEN] = (player, request['ROOM_NAME'], True)
+            playersTokensDict[player.TOKEN] = [player, request['ROOM_NAME'], True]
             roomsActivity[roomIndex] += 1
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":str(request['ROOM_NAME'])})
             return
