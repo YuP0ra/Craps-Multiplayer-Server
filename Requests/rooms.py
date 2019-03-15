@@ -20,7 +20,6 @@ def run():
         deltaTime = time.time() - initTime
         if deltaTime < 1:
             time.sleep(1 - deltaTime)
-        print(deltaTime)
 
 
 def getRoomsFullInfo():
@@ -61,10 +60,10 @@ def JOIN_ROOM_REQUEST(player, request):
 
 
 def LEAVE_ROOM_REQUEST(player, request):
-    if player.TOKEN in playerTokenList:                 #The player is in a room
+    if player.TOKEN in playersTokensDict:                 #The player is in a room
         roomsActivity = configFile['active_players']
-        roomIndex = configFile['rooms_name'].index(playerTokenList[player.TOKEN][1])
-        del playerTokenList[player.TOKEN]
+        roomIndex = configFile['rooms_name'].index(playersTokensDict[player.TOKEN][1])
+        del playersTokensDict[player.TOKEN]
         roomsActivity[roomIndex] -= 1
         player.send_data({"TYPE":"ROOM_LEAVE_SUCCESS"})
     else:
