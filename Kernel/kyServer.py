@@ -1,4 +1,4 @@
-import os, json, socket, secrets, importlib
+import os, json, socket, secrets, importlib, inspect
 from threading import Thread
 from socket import timeout
 
@@ -12,6 +12,7 @@ class GameServer(Thread):
 
         self.__moudles = {}
         self.__methods = {}
+        self.__loops = []
 
         self.PATH = requestHandlerPath
         self.HOSTNAME = HOSTNAME
@@ -25,6 +26,10 @@ class GameServer(Thread):
         SERVER.listen(5)
 
         print("Server started on main thread")
+
+        for loop in self.__loops:
+            Thread(target=loop).start()
+
         while True:
             client_socket, client_address = SERVER.accept()
             RemoteClient(client_socket, client_address, self).start()
@@ -41,11 +46,14 @@ class GameServer(Thread):
             self.__moudles[script] = objectModule
 
             # get requests method
-            methods = [func for func in dir(objectModule) if callable(getattr(objectModule, func))]
+            methods = [func for func in dir(objectModule) if inspect.isfunction(getattr(objectModule, func))]
             for method in methods:
-                if not method in self.__methods:
-                    self.__methods[method] = []
-                self.__methods[method].append(getattr(objectModule, method))
+                if method == 'run':
+                    self.__loops.append(getattr(objectModule, method))
+                else:
+                    if not method in self.__methods:
+                        self.__methods[method] = []
+                    self.__methods[method].append(getattr(objectModule, method))
 
     def processClientEvents(self, client, event):
         if event in self.__methods:

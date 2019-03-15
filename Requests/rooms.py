@@ -1,16 +1,26 @@
-import json
+import json, time
 
 
 """ ############### Loading the rooms json config file ############### """
-configFile = None
+configFile, ROOM_CAPACITY = None, 5
 with open('Statics/roomsInfo.json') as json_file:
     configFile = json.load(json_file)
 
 
 """ ####################### Initializing Rooms ####################### """
-crapsRooms, playersTokens = {}, {}
-for room_name in configFile['rooms_name']:
-    crapsRooms[room_name] = [], []
+playersTokensDict = {}                  #"{TOKEN}: (socket, room, status)
+
+
+def run():
+    while True:
+        initTime = time.time()
+
+
+        """ Calculate deltaTime to make sure all rooms are clocked every exatly 1 second """
+        deltaTime = time.time() - initTime
+        if deltaTime < 1:
+            time.sleep(1 - deltaTime)
+        print(deltaTime)
 
 
 def getRoomsFullInfo():
@@ -29,39 +39,33 @@ def getRoomsActivePlayers():
             }
 
 
-def ROOMS_FULL_INFO(client, request):
-    client.send_data(getRoomsFullInfo())
+def ROOMS_FULL_INFO(player, request):
+    player.send_data(getRoomsFullInfo())
+
+def ROOMS_ACTIVITY_INFO(player, request):
+    player.send_data(getRoomsActivePlayers())
 
 
-def ROOMS_ACTIVITY_INFO(client, request):
-    client.send_data(getRoomsActivePlayers())
-
-
-def JOIN_ROOM_REQUEST(client, request):
+def JOIN_ROOM_REQUEST(player, request):
     roomsActivity = configFile['active_players']
     roomIndex = configFile['rooms_name'].index(request['ROOM_NAME'])
-    playerTokenList, playerActiveList = crapsRooms[request['ROOM_NAME']]
 
-    if not client.TOKEN in playerTokenList:     #The player is not in the room
-        if roomsActivity[roomIndex] < 5:
-            playerTokenList.append(client.TOKEN)
-            playerActiveList.append(True)
+    if not player.TOKEN in playersTokensDict:           # The player is not in a room
+        if roomsActivity[roomIndex] < ROOM_CAPACITY:
+            """ Here we assign a player a room. socket,    room_name,      isActive """
+            playersTokensDict[player.TOKEN] = (player, request['ROOM_NAME'], True)
             roomsActivity[roomIndex] += 1
+            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":str(request['ROOM_NAME'])})
+            return
+    player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
+
+
+def LEAVE_ROOM_REQUEST(player, request):
+    if player.TOKEN in playerTokenList:                 #The player is in a room
+        roomsActivity = configFile['active_players']
+        roomIndex = configFile['rooms_name'].index(playerTokenList[player.TOKEN][1])
+        del playerTokenList[player.TOKEN]
+        roomsActivity[roomIndex] -= 1
+        player.send_data({"TYPE":"ROOM_LEAVE_SUCCESS"})
     else:
-        index = playerTokenList.index(client.TOKEN)
-        playerActiveList[index] = True
-
-
-def LEAVE_ROOM_REQUEST(client, request):
-    roomsActivity = configFile['active_players']
-    roomIndex = configFile['rooms_name'].index(request['ROOM_NAME'])
-    playerTokenList, playerActiveList = crapsRooms[request['ROOM_NAME']]
-
-    if not client.TOKEN in playerTokenList:     #The player is not in the room
-        if roomsActivity[roomIndex] < 5:
-            playerTokenList.append(client.TOKEN)
-            playerActiveList.append(True)
-            roomsActivity[roomIndex] += 1
-    else:
-        index = playerTokenList.index(client.TOKEN)
-        playerActiveList[index] = True
+        player.send_data({"TYPE":"ROOM_LEAVE_FAILD"})
