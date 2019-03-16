@@ -1,24 +1,18 @@
-import json, time
+import json
+import time
+import random
+
+from Kernel.database import get, set
 
 
 """ ############### Loading the rooms json config file ############### """
+rommsToPlayerTokenDict = {}
 configFile, ROOM_CAPACITY = None, 5
 with open('Statics/roomsInfo.json') as json_file:
     configFile = json.load(json_file)
 
-
-""" ####################### Initializing Rooms ####################### """
-playersTokensDict = {}                  #"{TOKEN}: (socket, room, status)
-def run():
-    while True:
-        initTime = time.time()
-
-
-        """ Calculate deltaTime to make sure all rooms are clocked every exatly 1 second """
-        deltaTime = time.time() - initTime
-        if deltaTime < 1:
-            time.sleep(1 - deltaTime)
-
+for room_name in configFile['rooms_name']:
+    rommsToPlayerTokenDict[room_name] = []
 
 def getRoomsFullInfo():
     return {
@@ -36,14 +30,40 @@ def getRoomsActivePlayers():
             }
 
 
-""" ####################### Requests Handling ####################### """
+""" ######################## players Runtime ######################## """
+playersTokensDict = {}                   #"{TOKEN}: (socket, room, active)
+def run():
+    ROUND_TIME = 15
+    while True:
+        initTime = time.time()
 
+        for socket, room, status in playersTokensDict:
+            if active:
+                socket.send_data({"TYPE":"NEW_ROUND_STARTED"})
+
+        initTime = sleepExatcly(initTime, ROUND_TIME)
+
+        for socket, room, status in playersTokensDict:
+            if active:
+                socket.send_data({"TYPE":"DICE_ROLLED", "DICE1":str(random.randint(1, 6)), "DICE2":str(random.randint(1, 6))})
+
+        initTime = sleepExatcly(initTime, 5)
+
+def sleepExatcly(initTime, amount):
+    deltaTime = time.time() - initTime
+    if deltaTime < amount:
+        time.sleep(amount - deltaTime)
+    return time.time()
+
+""" ####################### Requests Handling ####################### """
 def onConnectionEnded(client):
     if client.TOKEN in playersTokensDict:
         playersTokensDict[client.TOKEN][2] = False
 
+
 def ROOMS_FULL_INFO(player, request):
     player.send_data(getRoomsFullInfo())
+
 
 def ROOMS_ACTIVITY_INFO(player, request):
     player.send_data(getRoomsActivePlayers())
@@ -72,3 +92,7 @@ def LEAVE_ROOM_REQUEST(player, request):
         player.send_data({"TYPE":"ROOM_LEAVE_SUCCESS"})
     else:
         player.send_data({"TYPE":"ROOM_LEAVE_FAILD"})
+
+
+def CRAPS_BET(client, request):
+    pass

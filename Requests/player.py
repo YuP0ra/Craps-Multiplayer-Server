@@ -1,13 +1,17 @@
 import time
-import sqlite3
+newPlayersList, playersInfoDict = [], {}
 
 
 def onConnectionStarted(client):
-    print("New Connection: ", client.address)
+    print("Connection Started: ", client.address)
+
+    newPlayersList.append(client)
+    client.send_data({"TYPE": "CONNECTED", "TOKEN":client.TOKEN})
 
 
 def onConnectionTimeout(client):
-    pass
+    if client.TOKEN not in playersInfoDict:
+        client.send_data({"TYPE": "GET_PLAYER_INFO"})
 
 
 def onConnectionEnded(client):
@@ -15,7 +19,12 @@ def onConnectionEnded(client):
 
 
 def PLAYER_INFO(client, request):
-    print("FROM DEF PLAYER INFO: ", request)
+    client.TOKEN = request['TOKEN']
+
+    if client.TOKEN not in playersInfoDict:
+        playersInfoDict[client.TOKEN] = [request['TOKEN'], request['NAME'], request['LEVEL'], request['MONEY']]
+
+    print("PLAYER INFO: ", playersInfoDict[client.TOKEN])
 
 
 def DEFAULT(client, request):

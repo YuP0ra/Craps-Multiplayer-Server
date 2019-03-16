@@ -72,17 +72,15 @@ class GameServer(Thread):
 
 
 class RemoteClient(Thread):
-    RemoteClientID = 0
     def __init__(self, socket, address, kernel):
         Thread.__init__(self)
         socket.settimeout(5)
-        RemoteClient.RemoteClientID += 1
 
         self._socket    = socket
         self._kernel    = kernel
 
         self.address    = address
-        self.TOKEN      = RemoteClient.RemoteClientID
+        self.TOKEN      = str(secrets.token_hex(32))
 
     def run(self,):
         self.on_client_connect()

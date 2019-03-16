@@ -1,38 +1,50 @@
-import sqlite3, json
+import json
+import sqlite3
 
 
+_db_memory      = {}
+_db_connection  = sqlite3.connect('Statics/kyServerDB.db')
 
-conn = sqlite3.connect('Statics/kyServerDB.db')
 
 def init():
     """ ########################## Loading Database ######################### """
-    cursor = conn.execute('''SELECT * FROM sqlite_master WHERE type='table' and name='CrapsPlayer';''')
+    cursor = _db_connection.execute('''SELECT * FROM sqlite_master WHERE type='table' and name='Token2JSON';''')
     for row in cursor:
-        if 'CrapsPlayer' in row:
+        if 'Token2JSON' in row:
             break
     else:
-        conn.execute('''CREATE TABLE CrapsPlayer
+        _db_connection.execute('''CREATE TABLE Token2JSON
                      (
                      TOKEN          CHAR(32)    NOT NULL    PRIMARY KEY,
                      JSON           TEXT        NOT NULL
                      );'''
                      )
         print("DATABASE CREATED SUCCESSFULLY")
-        conn.close()
+        _db_connection.close()
 
 
-def addJsonPlayer(token, playerJson):
+def addJsonDB(token, playerJson):
     try:
-        conn.execute('''INSERT INTO CrapsPlayer(TOKEN, JSON) VALUES(?,?)''', (token, playerJson))
-        conn.commit()
+        _db_connection.execute('''INSERT INTO Token2JSON(TOKEN, JSON) VALUES(?,?)''', (token, playerJson))
+        _db_connection.commit()
         return True
     except Exception as e:
         return False
 
 
-def getJsonPlayer(token):
+def getDJsonDB(token):
     try:
-        return [str(row[0]) for row in conn.execute('''SELECT JSON FROM CrapsPlayer WHERE token="%s";''' % token).fetchall()]
+        return [str(row[0]) for row in _db_connection.execute('''SELECT JSON FROM Token2JSON WHERE token="%s";''' % token).fetchall()]
     except Exception as e:
         print(e)
         return None
+
+
+def get(var):
+    if var in _db_memory:
+        return _db_memory[var]
+    return None
+
+
+def set(var, value):
+    _db_memory[var] = value
