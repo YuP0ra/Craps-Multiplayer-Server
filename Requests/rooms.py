@@ -3,7 +3,6 @@ import random
 from Kernel.database import get, set
 
 ################################################################################
-ROOM_CAPACITY = 5
 crapsRooms = {}
 
 
@@ -24,49 +23,49 @@ def sleepExatcly(initTime, amount):
         time.sleep(amount - deltaTime)
     return time.time()
 
-def broadcastRequest(roomName, sender, request):
-    for player in crapsRooms[roomName]:
-        if not sender.TOKEN == player.TOKEN:
-            player.send_data(request)
+def broadcastRequest(sender, request):
+    roomName = player.DATA.get('CURRENT_ROOM', None)
+    if roomName is not None:
+        for player in crapsRooms[roomName]:
+            if not sender.TOKEN == player.TOKEN:
+                player.send_data(request)
+
 
 ################################################################################
 def onConnectionEnded(client):
     roomName = client.DATA.get('CURRENT_ROOM', None)
     if roomName is not None:
         crapsRooms[roomName].remove(client)
+        get('decrementRoomActivity')(roomName)
 
 
 def JOIN_ROOM_REQUEST(player, request):
-    roomsActivity = roomsInfo['active_players']
-    roomIndex = roomsInfo['rooms_name'].index(request['ROOM_NAME'])
+    if request['ROOM_NAME'] not in crapsRooms:
+        crapsRooms[request['ROOM_NAME']] = []
 
-    if not player.TOKEN in token2player:           # The player is not in a room
-        if roomsActivity[roomIndex] < ROOM_CAPACITY:
-            roomsActivity[roomIndex] += 1
-            token2player[player.TOKEN] = player
-            room2token[request['ROOM_NAME']].append(player.TOKEN)
-            player.DATA['LAST_JOINED_ROOM_NAME'] = request['ROOM_NAME']
-
+    if client.DATA.get('CURRENT_ROOM', None) is None:
+        if len(crapsRooms[request['ROOM_NAME']]) < 5:
+            player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
+            crapsRooms[request['ROOM_NAME']].append(player)
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS"})
-            broadcastRequest(request['ROOM_NAME'], player.TOKEN, {"TYPE":"NEW_PLAYER_JOINED"})
-            return
-    player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
+
+            broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
+                                        "TOKEN" : player.TOKEN,
+                                        "NAME"  : str(player.DATA['INFO'][0]),
+                                        "LEVEL" : str(player.DATA['INFO'][1]),
+                                        "MONEY" : str(player.DATA['INFO'][2])})
+        else:
+            player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
+    else:
+        player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
 
 
 def LEAVE_ROOM_REQUEST(player, request):
-    if player.TOKEN in token2player:                 #The player is in a room
-        roomsActivity = roomsInfo['active_players']
-        roomName = player.DATA['LAST_JOINED_ROOM_NAME']
-        roomIndex = roomsInfo['rooms_name'].index(roomName)
-
-        roomsActivity[roomIndex] -= 1
-        token2player.pop(player.TOKEN, None)
-        room2token[roomName].remove(player.TOKEN)
-        player.send_data({"TYPE":"ROOM_LEAVE_SUCCESS"})
-        broadcastRequest(roomName, player.TOKEN, {"TYPE":"NEW_PLAYER_LEFT"})
-    else:
-        player.send_data({"TYPE":"ROOM_LEAVE_FAILD"})
+    if player.DATA.get('CURRENT_ROOM', None) in crapsRooms:
+        crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
+        broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
+                                    "TOKEN" : player.TOKEN})
 
 
 def CRAPS_BET(client, request):
-    broadcastRequest(client.DATA['LAST_JOINED_ROOM_NAME'], client.TOKEN, request)
+    broadcastRequest(client, request)

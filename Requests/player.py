@@ -5,8 +5,9 @@ from Kernel.database import get, set
 def onConnectionStarted(client):
     client.send_data({"TYPE": "CONNECTED"})
     client.DATA['Info'] = ["Guest", 1, 50000]
-    print("Connection Started: ", client.address)
     client.send_data({"TYPE": "GET_PLAYER_INFO"})
+    
+    print("Connection Started: ", client.address)
 
 
 def onConnectionTimeout(client):
