@@ -79,6 +79,7 @@ class RemoteClient(Thread):
         self._socket    = socket
         self._kernel    = kernel
 
+        self.DATA       = {}
         self.address    = address
         self.TOKEN      = str(secrets.token_hex(32))
 

@@ -6,48 +6,40 @@ from Kernel.database import get, set
 
 
 """ ############### Loading the rooms json config file ############### """
-rommsToPlayerTokenDict = {}
-configFile, ROOM_CAPACITY = None, 5
+token2player, room2token = {}, {}
+roomsInfo, ROOM_CAPACITY = None, 5
 with open('Statics/roomsInfo.json') as json_file:
-    configFile = json.load(json_file)
+    roomsInfo = json.load(json_file)
 
-for room_name in configFile['rooms_name']:
-    rommsToPlayerTokenDict[room_name] = []
+for room_name in roomsInfo['rooms_name']:
+    room2token[room_name] = []
 
 def getRoomsFullInfo():
     return {
             "TYPE"  : "FULL_ROOMS_INFO",
-            "NAMES" : configFile['rooms_name'],
-            "MINBET": configFile['rooms_min_bet'],
-            "MAXBET": configFile['rooms_max_bet'],
-            "ACTIVE": configFile['active_players']
+            "NAMES" : roomsInfo['rooms_name'],
+            "MINBET": roomsInfo['rooms_min_bet'],
+            "MAXBET": roomsInfo['rooms_max_bet'],
+            "ACTIVE": roomsInfo['active_players']
             }
 
 def getRoomsActivePlayers():
     return {
             "TYPE"  : "ACTIVIY_ROOMS_INFO",
-            "ACTIVE": configFile['active_players']
+            "ACTIVE": roomsInfo['active_players']
             }
 
 
 """ ######################## players Runtime ######################## """
-playersTokensDict = {}                   #"{TOKEN}: (socket, room, active)
 def run():
     ROUND_TIME = 15
     while True:
         initTime = time.time()
+        ############################################ CODE START HERE
 
-        for socket, room, status in playersTokensDict:
-            if active:
-                socket.send_data({"TYPE":"NEW_ROUND_STARTED"})
 
+        ############################################ CODE END HERE
         initTime = sleepExatcly(initTime, ROUND_TIME)
-
-        for socket, room, status in playersTokensDict:
-            if active:
-                socket.send_data({"TYPE":"DICE_ROLLED", "DICE1":str(random.randint(1, 6)), "DICE2":str(random.randint(1, 6))})
-
-        initTime = sleepExatcly(initTime, 5)
 
 def sleepExatcly(initTime, amount):
     deltaTime = time.time() - initTime
@@ -55,11 +47,12 @@ def sleepExatcly(initTime, amount):
         time.sleep(amount - deltaTime)
     return time.time()
 
+
 """ ####################### Requests Handling ####################### """
 def onConnectionEnded(client):
-    if client.TOKEN in playersTokensDict:
-        playersTokensDict[client.TOKEN][2] = False
-
+    room_name = token2player.pop(client.TOKEN, None)
+    if room_name is not None:
+        room2token[client.DATA['LAST_JOINED_ROOM_NAME']].remove(client.TOKEN)
 
 def ROOMS_FULL_INFO(player, request):
     player.send_data(getRoomsFullInfo())
@@ -70,25 +63,29 @@ def ROOMS_ACTIVITY_INFO(player, request):
 
 
 def JOIN_ROOM_REQUEST(player, request):
-    roomsActivity = configFile['active_players']
-    roomIndex = configFile['rooms_name'].index(request['ROOM_NAME'])
+    roomsActivity = roomsInfo['active_players']
+    roomIndex = roomsInfo['rooms_name'].index(request['ROOM_NAME'])
 
-    if not player.TOKEN in playersTokensDict:           # The player is not in a room
+    if not player.TOKEN in token2player:           # The player is not in a room
         if roomsActivity[roomIndex] < ROOM_CAPACITY:
-            """ Here we assign a player a room. socket,    room_name,      isActive """
-            playersTokensDict[player.TOKEN] = [player, request['ROOM_NAME'], True]
             roomsActivity[roomIndex] += 1
+            token2player[player.TOKEN] = player
+            room2token[request['ROOM_NAME']].append(player.TOKEN)
+            player.DATA['LAST_JOINED_ROOM_NAME'] = request['ROOM_NAME']
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":str(request['ROOM_NAME'])})
             return
     player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
 
 
 def LEAVE_ROOM_REQUEST(player, request):
-    if player.TOKEN in playersTokensDict:                 #The player is in a room
-        roomsActivity = configFile['active_players']
-        roomIndex = configFile['rooms_name'].index(playersTokensDict[player.TOKEN][1])
-        del playersTokensDict[player.TOKEN]
+    if player.TOKEN in token2player:                 #The player is in a room
+        roomsActivity = roomsInfo['active_players']
+        roomName = player.DATA['LAST_JOINED_ROOM_NAME']
+        roomIndex = roomsInfo['rooms_name'].index(roomName)
+
         roomsActivity[roomIndex] -= 1
+        token2player.pop(player.TOKEN, None)
+        room2token[roomName].remove(player.TOKEN)
         player.send_data({"TYPE":"ROOM_LEAVE_SUCCESS"})
     else:
         player.send_data({"TYPE":"ROOM_LEAVE_FAILD"})
