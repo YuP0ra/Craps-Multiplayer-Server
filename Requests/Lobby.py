@@ -26,7 +26,7 @@ def decrementRoomActivity(roomName):
 ################################################################################
 def GET_LOBBY_ROOMS(player, request):
     player.send_data({
-                        "TYPE"  : "FULL_ROOMS_INFO",
+                        "TYPE"  : "LOBBY_ROOMS",
                         "NAMES" : roomsInfo['rooms_name'],
                         "MINBET": roomsInfo['rooms_min_bet'],
                         "MAXBET": roomsInfo['rooms_max_bet'],
@@ -36,7 +36,7 @@ def GET_LOBBY_ROOMS(player, request):
 
 def GET_LOBBY_ACTIVIY(player, request):
     player.send_data({
-                        "TYPE"  : "ACTIVIY_ROOMS_INFO",
+                        "TYPE"  : "LOBBY_ROOMS_ACTIVITY",
                         "ACTIVE": roomsInfo['active_players']
                     })
 

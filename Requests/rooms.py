@@ -67,5 +67,22 @@ def LEAVE_ROOM_REQUEST(player, request):
                                     "TOKEN" : player.TOKEN})
 
 
+def ROOM_PLAYERS_INFO(player, request):
+    roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    if roomNmae in crapsRooms:
+        players = [x for x in crapsRooms[roomNmae] if x != player]
+
+        tokens  = [p.TOKEN for p in players]
+        names   = [str(p.DATA['INFO'][0]) for p in players]
+        levels  = [str(p.DATA['INFO'][1]) for p in players]
+        moneies = [str(p.DATA['INFO'][2]) for p in players]
+
+        player.send_data({"TYPE":   "ROOM_PLAYERS_INFO",
+                                    "TOKEN" : tokens,
+                                    "NAME"  : names,
+                                    "LEVEL" : levels,
+                                    "MONEY" : moneies })
+
+
 def CRAPS_BET(client, request):
     broadcastRequest(client, request)

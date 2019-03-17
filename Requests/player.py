@@ -6,7 +6,7 @@ def onConnectionStarted(client):
     client.send_data({"TYPE": "CONNECTED"})
     client.DATA['Info'] = ["Guest", 1, 50000]
     client.send_data({"TYPE": "GET_PLAYER_INFO"})
-    
+
     print("Connection Started: ", client.address)
 
 
@@ -20,6 +20,7 @@ def onConnectionEnded(client):
 
 def SET_TOKEN(client, request):
     client.TOKEN = request['TOKEN']
+    client.send_data({"TYPE": "TOKEN_SET_SUCCESS", "TOKEN": client.TOKEN})
 
 
 def PLAYER_INFO(client, request):
