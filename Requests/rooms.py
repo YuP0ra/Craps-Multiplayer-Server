@@ -3,7 +3,7 @@ import random
 from Kernel.database import get, set
 
 ################################################################################
-crapsRooms = {}
+tokensDB, crapsRooms = {}, {}
 
 
 ################################################################################
@@ -48,6 +48,7 @@ def JOIN_ROOM_REQUEST(player, request):
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
             crapsRooms[request['ROOM_NAME']].append(player)
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS"})
+            tokensDB[player.TOKEN] = request['ROOM_NAME']
 
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
                                         "TOKEN" : player.TOKEN,
@@ -65,6 +66,8 @@ def LEAVE_ROOM_REQUEST(player, request):
         crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
         broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                     "TOKEN" : player.TOKEN})
+        player.DATA['CURRENT_ROOM'] = None
+        tokensDB.pop(player.TOKEN, None)
 
 
 def ROOM_PLAYERS_INFO(player, request):
@@ -86,3 +89,6 @@ def ROOM_PLAYERS_INFO(player, request):
 
 def CRAPS_BET(client, request):
     broadcastRequest(client, request)
+
+################################################################################
+set('tokensDB', tokensDB)

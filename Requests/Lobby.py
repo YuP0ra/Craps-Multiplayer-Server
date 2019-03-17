@@ -24,6 +24,14 @@ def decrementRoomActivity(roomName):
 
 
 ################################################################################
+def SET_TOKEN(client, request):
+    if get('tokensDB').get(request['TOKEN'], None) is not None:
+        client.send_data({
+                            "TYPE":         "REJOIN_ROOM",
+                            "ROOM_NAME":    get('tokensDB')[request['TOKEN']]
+                         })
+
+
 def GET_LOBBY_ROOMS(player, request):
     player.send_data({
                         "TYPE"  : "LOBBY_ROOMS",
