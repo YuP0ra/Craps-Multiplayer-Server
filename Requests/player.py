@@ -22,4 +22,4 @@ def SET_TOKEN(client, request):
 
 
 def PLAYER_INFO(client, request):
-    client.DATA['INFO'] = [request['NAME'], request['LEVEL'], request['MONEY']]
+    client.DATA['INFO'] = [request.get('NAME', 'Guest'), request.get('LEVEL', 1), request.get('MONEY', 50000)]

@@ -4,6 +4,7 @@ from Kernel.database import get, set
 
 ################################################################################
 ROOM_CAPACITY = 5
+crapsRooms = {}
 
 
 ################################################################################
@@ -24,15 +25,15 @@ def sleepExatcly(initTime, amount):
     return time.time()
 
 def broadcastRequest(roomName, sender, request):
-    for token in room2token[roomName]:
-        if not sender.TOKEN == token:
-            token2player[token].send_data(request)
+    for player in crapsRooms[roomName]:
+        if not sender.TOKEN == player.TOKEN:
+            player.send_data(request)
 
 ################################################################################
 def onConnectionEnded(client):
-    room_name = token2player.pop(client.TOKEN, None)
-    if room_name is not None:
-        room2token[client.DATA['LAST_JOINED_ROOM_NAME']].remove(client.TOKEN)
+    roomName = client.DATA.get('CURRENT_ROOM', None)
+    if roomName is not None:
+        crapsRooms[roomName].remove(client)
 
 
 def JOIN_ROOM_REQUEST(player, request):
