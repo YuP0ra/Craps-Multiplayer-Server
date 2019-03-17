@@ -81,7 +81,7 @@ class RemoteClient(Thread):
 
         self.DATA       = {}
         self.address    = address
-        self.TOKEN      = str(secrets.token_hex(32))
+        self.TOKEN      = str(secrets.token_hex(16))
 
     def run(self,):
         self.on_client_connect()

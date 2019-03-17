@@ -1,37 +1,25 @@
 import time
-
 from Kernel.database import get, set
 
 
-playersDict, playersInfoDict = {}, {}
-set('playersDict', playersDict)
-
-
 def onConnectionStarted(client):
+    client.send_data({"TYPE": "CONNECTED"})
+    client.DATA['Info'] = ["Guest", 1, 50000]
     print("Connection Started: ", client.address)
-    client.send_data({"TYPE": "CONNECTED", "TOKEN":client.TOKEN})
+    client.send_data({"TYPE": "GET_PLAYER_INFO"})
 
 
 def onConnectionTimeout(client):
-    if client.TOKEN not in playersInfoDict:
-        client.send_data({"TYPE": "GET_PLAYER_INFO"})
+    client.send_data({"TYPE": "GET_PLAYER_INFO"})
 
 
 def onConnectionEnded(client):
-    playersDict.pop(client.TOKEN, None)
-    playersInfoDict.pop(client.TOKEN, None)
     print("Connection Terminated: ", client.address)
 
 
-def PLAYER_INFO(client, request):
+def SET_TOKEN(client, request):
     client.TOKEN = request['TOKEN']
 
-    if client.TOKEN not in playersInfoDict:
-        playersDict[client.TOKEN] = client
-        playersInfoDict[client.TOKEN] = [request['TOKEN'], request['NAME'], request['LEVEL'], request['MONEY']]
 
-    print("PLAYER INFO: ", playersInfoDict[client.TOKEN])
-
-
-def DEFAULT(client, request):
-    print("DEFAULT: ", request)
+def PLAYER_INFO(client, request):
+    client.DATA['INFO'] = [request['NAME'], request['LEVEL'], request['MONEY']]

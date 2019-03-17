@@ -1,36 +1,12 @@
-import json
 import time
 import random
-
 from Kernel.database import get, set
 
-
-""" ############### Loading the rooms json config file ############### """
-token2player, room2token = {}, {}
-roomsInfo, ROOM_CAPACITY = None, 5
-with open('Statics/roomsInfo.json') as json_file:
-    roomsInfo = json.load(json_file)
-
-for room_name in roomsInfo['rooms_name']:
-    room2token[room_name] = []
-
-def getRoomsFullInfo():
-    return {
-            "TYPE"  : "FULL_ROOMS_INFO",
-            "NAMES" : roomsInfo['rooms_name'],
-            "MINBET": roomsInfo['rooms_min_bet'],
-            "MAXBET": roomsInfo['rooms_max_bet'],
-            "ACTIVE": roomsInfo['active_players']
-            }
-
-def getRoomsActivePlayers():
-    return {
-            "TYPE"  : "ACTIVIY_ROOMS_INFO",
-            "ACTIVE": roomsInfo['active_players']
-            }
+################################################################################
+ROOM_CAPACITY = 5
 
 
-""" ######################## players Runtime ######################## """
+################################################################################
 def run():
     ROUND_TIME = 15
     while True:
@@ -47,19 +23,16 @@ def sleepExatcly(initTime, amount):
         time.sleep(amount - deltaTime)
     return time.time()
 
+def broadcastRequest(roomName, sender, request):
+    for token in room2token[roomName]:
+        if not sender.TOKEN == token:
+            token2player[token].send_data(request)
 
-""" ####################### Requests Handling ####################### """
+################################################################################
 def onConnectionEnded(client):
     room_name = token2player.pop(client.TOKEN, None)
     if room_name is not None:
         room2token[client.DATA['LAST_JOINED_ROOM_NAME']].remove(client.TOKEN)
-
-def ROOMS_FULL_INFO(player, request):
-    player.send_data(getRoomsFullInfo())
-
-
-def ROOMS_ACTIVITY_INFO(player, request):
-    player.send_data(getRoomsActivePlayers())
 
 
 def JOIN_ROOM_REQUEST(player, request):
@@ -72,7 +45,9 @@ def JOIN_ROOM_REQUEST(player, request):
             token2player[player.TOKEN] = player
             room2token[request['ROOM_NAME']].append(player.TOKEN)
             player.DATA['LAST_JOINED_ROOM_NAME'] = request['ROOM_NAME']
-            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "ROOM_NAME":str(request['ROOM_NAME'])})
+
+            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS"})
+            broadcastRequest(request['ROOM_NAME'], player.TOKEN, {"TYPE":"NEW_PLAYER_JOINED"})
             return
     player.send_data({"TYPE":"ROOM_JOIN_FAILD", "ERROR_MSG":"Room is at full capacity."})
 
@@ -87,9 +62,10 @@ def LEAVE_ROOM_REQUEST(player, request):
         token2player.pop(player.TOKEN, None)
         room2token[roomName].remove(player.TOKEN)
         player.send_data({"TYPE":"ROOM_LEAVE_SUCCESS"})
+        broadcastRequest(roomName, player.TOKEN, {"TYPE":"NEW_PLAYER_LEFT"})
     else:
         player.send_data({"TYPE":"ROOM_LEAVE_FAILD"})
 
 
 def CRAPS_BET(client, request):
-    pass
+    broadcastRequest(client.DATA['LAST_JOINED_ROOM_NAME'], client.TOKEN, request)
