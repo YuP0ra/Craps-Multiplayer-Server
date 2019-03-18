@@ -52,7 +52,7 @@ def onConnectionEnded(client):
         crapsRooms[roomName].remove(client)
         get('decrementRoomActivity')(roomName)
         broadcastRequest(client, {  "TYPE"  : "NEW_PLAYER_LEFT",
-                                    "TOKEN" : client.TOKEN})
+                                    "TOKEN" : client.DATA['RID']})
 
 
 def JOIN_ROOM_REQUEST(player, request):
@@ -70,7 +70,7 @@ def JOIN_ROOM_REQUEST(player, request):
             tokensDB[player.TOKEN] = request['ROOM_NAME']
 
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
-                                        "TOKEN" : player.TOKEN,
+                                        "TOKEN" : player.DATA['RID'],
                                         "NAME"  : str(player.DATA['INFO'][0]),
                                         "LEVEL" : str(player.DATA['INFO'][1]),
                                         "MONEY" : str(player.DATA['INFO'][2])})
@@ -85,7 +85,7 @@ def LEAVE_ROOM_REQUEST(player, request):
         crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
         get('decrementRoomActivity')(player.DATA['CURRENT_ROOM'])
         broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
-                                    "TOKEN" : player.TOKEN})
+                                    "TOKEN" : player.DATA['RID']})
         player.DATA['CURRENT_ROOM'] = None
         tokensDB.pop(player.TOKEN, None)
 
