@@ -24,7 +24,7 @@ def sleepExatcly(initTime, amount):
     return time.time()
 
 def broadcastRequest(sender, request):
-    roomName = player.DATA.get('CURRENT_ROOM', None)
+    roomName = sender.DATA.get('CURRENT_ROOM', None)
     if roomName is not None:
         for player in crapsRooms[roomName]:
             if not sender.TOKEN == player.TOKEN:
@@ -43,9 +43,11 @@ def JOIN_ROOM_REQUEST(player, request):
     if request['ROOM_NAME'] not in crapsRooms:
         crapsRooms[request['ROOM_NAME']] = []
 
-    if client.DATA.get('CURRENT_ROOM', None) is None:
+    if player.DATA.get('CURRENT_ROOM', None) is None:
         if len(crapsRooms[request['ROOM_NAME']]) < 5:
+
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
+            get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS"})
             tokensDB[player.TOKEN] = request['ROOM_NAME']
@@ -64,6 +66,7 @@ def JOIN_ROOM_REQUEST(player, request):
 def LEAVE_ROOM_REQUEST(player, request):
     if player.DATA.get('CURRENT_ROOM', None) in crapsRooms:
         crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
+        get('incrementRoomActivity')(player.DATA['CURRENT_ROOM'])
         broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                     "TOKEN" : player.TOKEN})
         player.DATA['CURRENT_ROOM'] = None

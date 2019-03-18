@@ -4,6 +4,8 @@ from Kernel.database import get, set
 
 def onConnectionStarted(client):
     client.send_data({"TYPE": "CONNECTED"})
+
+    client.DATA['CURRENT_ROOM'] = None
     client.DATA['Info'] = ["Guest", 1, 50000]
     client.send_data({"TYPE": "GET_PLAYER_INFO"})
 
