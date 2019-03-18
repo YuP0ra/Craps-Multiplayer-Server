@@ -1,5 +1,6 @@
 import time
 import random
+import secrets
 from Kernel.database import get, set
 
 ################################################################################
@@ -61,6 +62,7 @@ def JOIN_ROOM_REQUEST(player, request):
     if player.DATA.get('CURRENT_ROOM', None) is None:
         if len(crapsRooms[request['ROOM_NAME']]) < 5:
 
+            player.DATA['RID'] = secrets.token_hex(10)
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
             get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
@@ -93,7 +95,7 @@ def ROOM_PLAYERS_INFO(player, request):
     if roomNmae in crapsRooms:
         players = [x for x in crapsRooms[roomNmae] if x != player]
 
-        tokens  = [p.TOKEN for p in players]
+        tokens  = [p.DATA['RID'] for p in players]
         names   = [str(p.DATA['INFO'][0]) for p in players]
         levels  = [str(p.DATA['INFO'][1]) for p in players]
         moneies = [str(p.DATA['INFO'][2]) for p in players]
