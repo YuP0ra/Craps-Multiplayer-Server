@@ -8,14 +8,26 @@ tokensDB, crapsRooms = {}, {}
 
 ################################################################################
 def run():
-    ROUND_TIME = 15
+    ROUND_TIME, CALCULATIONS_TIME = 15, 10
+
     while True:
         initTime = time.time()
         ############################################ CODE START HERE
-
-
-        ############################################ CODE END HERE
+        dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
+        for roomName in crapsRooms:
+            for player in crapsRooms[roomName]:
+                player.send_data({"TYPE"  :"ROUND_STARTED"})
         initTime = sleepExatcly(initTime, ROUND_TIME)
+
+        for roomName in crapsRooms:
+            for player in crapsRooms[roomName]:
+                player.send_data({
+                                    "TYPE"  :"DICE_ROLLED",
+                                    "DICE1" :str(dice1),
+                                    "DICE2" :str(dice2)
+                                 })
+        initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
+        ############################################ CODE END HERE
 
 def sleepExatcly(initTime, amount):
     deltaTime = time.time() - initTime
