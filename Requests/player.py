@@ -6,7 +6,7 @@ def onConnectionStarted(client):
     client.send_data({"TYPE": "CONNECTED"})
 
     client.DATA['CURRENT_ROOM'] = None
-    client.DATA['Info'] = ["Guest", 1, 50000]
+    client.DATA['INFO'] = ["Guest", 1, 50000]
     client.send_data({"TYPE": "GET_PLAYER_INFO"})
 
     print("Connection Started: ", client.address)
@@ -26,4 +26,5 @@ def SET_TOKEN(client, request):
 
 
 def PLAYER_INFO(client, request):
+    print(request)
     client.DATA['INFO'] = [request.get('NAME', 'Guest'), request.get('LEVEL', 1), request.get('MONEY', 50000)]
