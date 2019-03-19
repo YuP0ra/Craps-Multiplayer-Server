@@ -4,7 +4,7 @@ import secrets
 from Kernel.database import get, set
 
 ################################################################################
-tokensDB, crapsRooms = {}, {}
+tokensDB, crapsRooms, crapsRoomsTable = {}, {}, {}
 
 
 ################################################################################
@@ -14,12 +14,19 @@ def run():
     while True:
         initTime = time.time()
         ############################################ CODE START HERE
-        dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
+        ############ Betiing Starts
         for roomName in crapsRooms:
-            for player in crapsRooms[roomName]:
-                player.send_data({"TYPE"  :"ROUND_STARTED"})
+            dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
+            if len(crapsRooms[roomName]) == 0:
+                clearRoomTable()
+            else:
+                for player in crapsRooms[roomName]:
+                    player.send_data({"TYPE"  :"ROUND_STARTED"})
+        ############ Betiing Ends
+
         initTime = sleepExatcly(initTime, ROUND_TIME)
 
+        ############ Animation Starts
         for roomName in crapsRooms:
             for player in crapsRooms[roomName]:
                 player.send_data({
@@ -27,8 +34,9 @@ def run():
                                     "DICE1" :str(dice1),
                                     "DICE2" :str(dice2)
                                  })
-        initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
+        ############ Animation Ends
         ############################################ CODE END HERE
+        initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
 
 def sleepExatcly(initTime, amount):
     deltaTime = time.time() - initTime
@@ -44,6 +52,17 @@ def broadcastRequest(sender, request):
                 player.send_data(request)
         sender.send_data({"TYPE": "BROADCAST_SUCCESS", "BROADCAST_TYPE": request['TYPE']})
 
+def clearRoomTable():
+    crapsRoomsTable[roomNmae] = {}
+
+def updateRoomTable(roomName, rid, betName, amount):
+    if roomName not in crapsRoomsTable:
+        crapsRoomsTable[roomName] = {}
+
+    if betName not in crapsRoomsTable[roomName]:
+        crapsRoomsTable[roomName][betName] = 0
+
+    crapsRoomsTable[roomName][betName] += amount
 
 ################################################################################
 def onConnectionEnded(client):
@@ -106,10 +125,20 @@ def ROOM_PLAYERS_INFO(player, request):
                                     "LEVEL" : levels,
                                     "MONEY" : moneies })
 
+def ROOM_TABLE_INFO(player, request):
+    roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    if roomNmae in crapsRooms:
+        bets    = [bn for bn in crapsRoomsTable[roomName]]
+        amount  = [crapsRoomsTable[roomName][bn] for bn in crapsRoomsTable[roomName]]
+
+        player.send_data({"TYPE":   "ROOM_TABLE_INFO",
+                                    "BETS"  : bets,
+                                    "AMOUNT": amount })
 
 def CRAPS_BET(client, request):
     client['TOKEN'] = client['RID']
     broadcastRequest(client, request)
+    updateRoomTable(client['CURRENT_ROOM'], client['RID'], request['BETTING_ON'], request['AMOUNT'])
 
 ################################################################################
 set('tokensDB', tokensDB)
