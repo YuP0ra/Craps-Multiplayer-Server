@@ -108,6 +108,7 @@ def ROOM_PLAYERS_INFO(player, request):
 
 
 def CRAPS_BET(client, request):
+    client['TOKEN'] = client['RID']
     broadcastRequest(client, request)
 
 ################################################################################

@@ -1,4 +1,4 @@
-import os, json, socket, secrets, importlib, inspect
+import os, json, time, socket, secrets, importlib, inspect
 from threading import Thread
 from socket import timeout
 
@@ -13,6 +13,7 @@ class GameServer(Thread):
         self.__moudles = {}
         self.__methods = {}
         self.__loops = []
+        self.__inits = []
 
         self.PATH = requestHandlerPath
         self.HOSTNAME = HOSTNAME
@@ -29,6 +30,9 @@ class GameServer(Thread):
 
         for loop in self.__loops:
             Thread(target=loop).start()
+
+        for init in self.__inits:
+            init()
 
         while True:
             client_socket, client_address = SERVER.accept()
@@ -50,6 +54,8 @@ class GameServer(Thread):
             for method in methods:
                 if method == 'run':
                     self.__loops.append(getattr(objectModule, method))
+                elif method == 'init':
+                    self.__inits.append(getattr(objectModule, method))
                 else:
                     if not method in self.__methods:
                         self.__methods[method] = []
@@ -71,10 +77,13 @@ class GameServer(Thread):
 
 
 
-class RemoteClient(Thread):
+class RemoteClient():
     def __init__(self, socket, address, kernel):
+        self._stack = []
+        self._sendThrd = Thread(target=self.rceving_thread)
+        self._rcevThrd = Thread(target=self.sending_thread)
+
         self.TOKEN      = str(secrets.token_hex(16))
-        Thread.__init__(self)
 
         self._socket    = socket
         self._kernel    = kernel
@@ -88,18 +97,12 @@ class RemoteClient(Thread):
     def __hash__(self):
         return hash(self.TOKEN)
 
-    def run(self,):
+    def start(self,):
         self.on_client_connect()
         self._socket.settimeout(5)
-        while True:
-            requests = self.recv_data()
 
-            if requests is "TIMEOUT":
-                continue
-
-            for request in requests:
-                self.process_request(request)
-        self.on_client_disconnect()
+        self._rcevThrd.start()
+        self._sendThrd.start()
 
     def on_client_connect(self,):
         self._kernel.processClientEvents(self, "onConnectionStarted")
@@ -111,16 +114,33 @@ class RemoteClient(Thread):
         self._kernel.processClientEvents(self, "onConnectionEnded")
         quit()
 
-    def send_data(self, data_dict):
-        """ Convert the dict into json and append the EndOfFile mark """
+    def rceving_thread(self,):
+        while True:
+            requests = self.recv_data()
 
-        json_form = json.dumps(data_dict) + "<EOF>"
-        valid_socket_form = json_form.encode('ascii')
-        try:
-            return self._socket.sendall(valid_socket_form)
-        except Exception as e:
-            self.on_client_disconnect()
-            return None
+            if requests is "TIMEOUT":
+                continue
+
+            for request in requests:
+                self.process_request(request)
+        self.on_client_disconnect()
+
+    def sending_thread(self,):
+        while True:
+            try:
+                if len(self._stack) == 0:
+                    time.sleep(0.02)
+                else:
+                    data_dict = self._stack.pop(0)
+                    json_form = json.dumps(data_dict) + "<EOF>"
+                    valid_socket_form = json_form.encode('ascii')
+                    self._socket.sendall(valid_socket_form)
+            except Exception as e:
+                self.on_client_disconnect()
+                return None
+
+    def send_data(self, data_dict):
+        self._stack.append(data_dict)
 
     def recv_data(self,):
         """ This function will return a list of valid socket segments transmitted over the network """
