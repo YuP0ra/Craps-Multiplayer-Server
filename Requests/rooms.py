@@ -60,7 +60,7 @@ def JOIN_ROOM_REQUEST(player, request):
         crapsRooms[request['ROOM_NAME']] = []
 
     if player.DATA.get('CURRENT_ROOM', None) is None:
-        if len(crapsRooms[request['ROOM_NAME']]) < 5:
+        if len(crapsRooms[request['ROOM_NAME']]) < 4:
 
             player.DATA['RID'] = secrets.token_hex(10)
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
