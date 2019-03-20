@@ -91,9 +91,12 @@ def sleepExatcly(initTime, amount):
 
 def broadcastRequest(sender, request):
     roomName = sender.DATA.get('CURRENT_ROOM', None)
+    print("Broadcasting request ", request["TYPE"])
     if roomName is not None:
         for player in crapsRooms[roomName]:
             if not sender.TOKEN == player.TOKEN:
+                player.send_data(request)
+            elif request["TYPE"] == "CRAPS_BET":
                 player.send_data(request)
         sender.send_data({"TYPE": "BROADCAST_SUCCESS", "BROADCAST_TYPE": request['TYPE']})
 
@@ -120,7 +123,7 @@ def JOIN_ROOM_REQUEST(player, request):
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
             get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
-            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS"})
+            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "TOKEN": player.DATA['RID']})
             tokensDB[player.TOKEN] = request['ROOM_NAME']
 
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
@@ -171,12 +174,12 @@ def ROOM_TABLE_INFO(player, request):
 
 
 def CRAPS_BET(client, request):
-    client['TOKEN'] = client['RID']
+    request['TOKEN'] = client.DATA['RID']
     broadcastRequest(client, request)
 
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    roomNmae = client.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
-        crapsRoomsTable[roomNmae].UpdateTableBet(client['RID'], request['BETTING_ON'], request['AMOUNT'])
+        crapsRoomsTable[roomNmae].UpdateTableBet(client.DATA['RID'], request['BETTING_ON'], int(request['AMOUNT']))
 
 
 ################################################################################
