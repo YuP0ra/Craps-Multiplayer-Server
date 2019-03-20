@@ -53,6 +53,7 @@ def GET_LOBBY_ACTIVIY(player, request):
 with open('Statics/roomsInfo.json') as json_file:
     roomsInfo = json.load(json_file)
 
+set('roomsInfo', roomsInfo)
 set('activePlayersInRoom', activePlayersInRoom)
 set('incrementRoomActivity', incrementRoomActivity)
 set('decrementRoomActivity', decrementRoomActivity)
