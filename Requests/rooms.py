@@ -171,12 +171,12 @@ def ROOM_TABLE_INFO(player, request):
 
 
 def CRAPS_BET(client, request):
-    client['TOKEN'] = client['RID']
+    request['TOKEN'] = client.DATA['RID']
     broadcastRequest(client, request)
 
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    roomNmae = client.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
-        crapsRoomsTable[roomNmae].UpdateTableBet(client['RID'], request['BETTING_ON'], request['AMOUNT'])
+        crapsRoomsTable[roomNmae].UpdateTableBet(client.DATA['RID'], request['BETTING_ON'], request['AMOUNT'])
 
 
 ################################################################################
