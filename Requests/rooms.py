@@ -35,10 +35,7 @@ class CrapsTable:
                 "MARKER"    : str(self.marker),
                 "RID_COUNT" : str(len(ridList)),
                 "RIDS_LIST" : ridList,
-                "RID1"      :0,
-                "RID2"      :0,
-                "RID3"      :0,
-                "RID4"      :0
+                "LIST_DICT" : [str(self.ridBets[rid]) for rid in self.ridBets]
                 }
 
 
@@ -74,7 +71,7 @@ def runRoom(roomName):
         ############ Animation Starts
         if len(crapsRooms[roomName]) == 0:
             continue
-            
+
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
         crapsRoomsTable[roomName].Roll(dice1, dice2)
         for player in crapsRooms[roomName]:
