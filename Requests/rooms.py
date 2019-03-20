@@ -96,8 +96,6 @@ def broadcastRequest(sender, request):
         for player in crapsRooms[roomName]:
             if not sender.TOKEN == player.TOKEN:
                 player.send_data(request)
-            elif request["TYPE"] == "CRAPS_BET":
-                player.send_data(request)
         sender.send_data({"TYPE": "BROADCAST_SUCCESS", "BROADCAST_TYPE": request['TYPE']})
 
 
