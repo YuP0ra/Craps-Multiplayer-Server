@@ -190,16 +190,15 @@ class CrapsTable:
         self.roundResultsLOSE = []
 
     def WIN(self, rid, line):
-        self.roundResultsWIN.append([rid, line])
+        self.roundResultsWIN.append(rid, line)
         self.ClearTableBet(rid, line)
 
     def PUSH(self, rid, line):
-        self.roundResultsPUSH.append([rid, line])
+        self.roundResultsPUSH.append(rid, line)
         self.ClearTableBet(rid, line)
 
     def LOSE(self, rid, line):
-        self.roundResultsLOSE.append(line)
-        self.roundResultsLOSE.append([rid, line])
+        self.roundResultsLOSE.append(rid, line)
         self.ClearTableBet(rid, line)
 
     def UpdateTableBet(self, rid, bet, amount):
@@ -232,31 +231,3 @@ class CrapsTable:
         return {"TYPE"      : "MARKER_INFO",
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "MARKER"    : str(self.marker)}
-
-
-# t = CrapsTable()
-#
-# for i in range(10):
-#     d1, d2 = random.randint(1, 6), random.randint(1, 6)
-#     t.UpdateTableBet('123', 'big6', 10)
-#     t.UpdateTableBet('123', 'big8', 30)
-#     t.UpdateTableBet('123', 'passline', 10)
-#     t.UpdateTableBet('123', 'dontpassline', 30)
-#     t.UpdateTableBet('123', 'field', 10)
-#     t.UpdateTableBet('123', 'prop2', 30)
-#     t.UpdateTableBet('123', 'prop3', 30)
-#     t.UpdateTableBet('123', 'prop7', 30)
-#     t.UpdateTableBet('123', 'prop11', 30)
-#
-#     t.UpdateTableBet('13', 'big6', 10)
-#     t.UpdateTableBet('13', 'big8', 30)
-#     t.UpdateTableBet('13', 'passline', 10)
-#     t.UpdateTableBet('13', 'dontpassline', 30)
-#     t.UpdateTableBet('13', 'field', 10)
-#     t.UpdateTableBet('13', 'prop2', 30)
-#     t.UpdateTableBet('13', 'prop3', 30)
-#     t.UpdateTableBet('13', 'prop7', 30)
-#     t.UpdateTableBet('13', 'prop11', 30)
-#
-#     t.Roll(d1, d2)
-#     print(d1+ d2, t.roundResultsWIN)
