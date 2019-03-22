@@ -37,6 +37,10 @@ class CrapsTable:
                 "RIDS_LIST" : ridList,
                 "LIST_DICT" : [str(self.ridBets[rid]) for rid in self.ridBets]
                 }
+    
+    def MarkerInfo(self):
+        return {"TYPE"      : "MARKER_INFO",
+                "MARKER"    : str(self.marker)}
 
 
 ################################################################################
@@ -80,6 +84,8 @@ def runRoom(roomName):
                                 "DICE1" :str(dice1),
                                 "DICE2" :str(dice2)
                              })
+
+            player.send_data(crapsRoomsTable[roomName].MarkerInfo())
         ############ Animation Ends
         initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
 
@@ -121,7 +127,7 @@ def JOIN_ROOM_REQUEST(player, request):
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
             get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
-            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "TOKEN": player.DATA['RID']})
+            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "TOKEN": player.DATA['RID'], "ROOM_NAME": request['ROOM_NAME']})
             tokensDB[player.TOKEN] = request['ROOM_NAME']
 
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
@@ -167,8 +173,10 @@ def ROOM_PLAYERS_INFO(player, request):
 
 def ROOM_TABLE_INFO(player, request):
     roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    print("GOT REQUEST. CURRENT ROOM IS: ", player.DATA.get('CURRENT_ROOM', None))
     if roomNmae in crapsRoomsTable:
         player.send_data(crapsRoomsTable[roomNmae].JsonTableInfo())
+        print("SHOULD HAVE SENT THE FOLLOWING DATA: " , crapsRoomsTable[roomNmae].JsonTableInfo())
 
 
 def CRAPS_BET(client, request):
@@ -178,6 +186,7 @@ def CRAPS_BET(client, request):
     roomNmae = client.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
         crapsRoomsTable[roomNmae].UpdateTableBet(client.DATA['RID'], request['BETTING_ON'], int(request['AMOUNT']))
+
 
 
 ################################################################################
