@@ -210,19 +210,19 @@ class CrapsTable:
         if self.BetValue(rid, line) > 0:
             self.roundResultsWIN.append(rid)
             self.roundResultsWIN.append(line)
-        self.ClearTableBet(rid, line)
+            self.ClearTableBet(rid, line)
 
     def PUSH(self, rid, line):
         if self.BetValue(rid, line) > 0:
             self.roundResultsPUSH.append(rid)
             self.roundResultsPUSH.append(line)
-        self.ClearTableBet(rid, line)
+            self.ClearTableBet(rid, line)
 
     def LOSE(self, rid, line):
         if self.BetValue(rid, line) > 0:
             self.roundResultsLOSE.append(rid)
             self.roundResultsLOSE.append(line)
-        self.ClearTableBet(rid, line)
+            self.ClearTableBet(rid, line)
 
     def UpdateTableBet(self, rid, bet, amount):
         if rid not in self.ridBets:

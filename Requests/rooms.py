@@ -3,55 +3,7 @@ import random
 import secrets
 from threading import Thread
 from Kernel.database import get, set
-<<<<<<< HEAD
-
-################################################################################
-class CrapsTable:
-    def __init__(self,):
-        self.marker = 0
-        self.ridBets = {}
-        self.isComeOutRoll = True
-
-    def Roll(self, dice1, dice2):
-        totalDices = dice1 + dice2
-        if self.isComeOutRoll and totalDices in [4, 5, 6, 8, 9, 10]:
-            self.marker = totalDices
-            self.isComeOutRoll = False
-        elif totalDices == 7 or totalDices == self.marker:
-            self.marker = 0
-            self.isComeOutRoll = True
-
-    def Reset(self,):
-            self.marker = 0
-            self.isComeOutRoll = True
-
-    def UpdateTableBet(self, rid, bet, amount):
-        if rid not in self.ridBets:         self.ridBets[rid] = {}
-        if bet not in self.ridBets[rid]:    self.ridBets[rid][bet] = 0
-        self.ridBets[rid][bet] +=           amount
-
-    def RemovePlayer(self, rid):
-        if rid in self.ridBets:
-            self.ridBets.pop(rid)
-
-    def JsonTableInfo(self):
-        ridList = [str(rid) for rid in self.ridBets]
-        return {"TYPE"      : "TABLE_INFO",
-                "MARKER"    : str(self.marker),
-                "COMEROLL"  : str(self.isComeOutRoll),
-                "RID_COUNT" : str(len(ridList)),
-                "RIDS_LIST" : ridList,
-                "LIST_DICT" : [str(self.ridBets[rid]) for rid in self.ridBets]
-                }
-
-    def MarkerInfo(self):
-        return {"TYPE"      : "MARKER_INFO",
-                "COMEROLL"  : str(self.isComeOutRoll),
-                "MARKER"    : str(self.marker)}
-
-=======
 from Utils.CrapsClasses import CrapsTable
->>>>>>> 8baa3dae5060235499bb1c37ca3061739120a2ec
 
 ################################################################################
 tokensDB, crapsRooms, crapsRoomsTable = {}, {}, {}
