@@ -91,7 +91,6 @@ def sleepExatcly(initTime, amount):
 
 def broadcastRequest(sender, request):
     roomName = sender.DATA.get('CURRENT_ROOM', None)
-    print("Broadcasting request ", request["TYPE"])
     if roomName is not None:
         for player in crapsRooms[roomName]:
             if not sender.TOKEN == player.TOKEN:
@@ -104,6 +103,8 @@ def onConnectionEnded(client):
     roomName = client.DATA.get('CURRENT_ROOM', None)
     if roomName is not None:
         crapsRooms[roomName].remove(client)
+        if player in crapsRooms[player.DATA['CURRENT_ROOM']]:
+            crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
         get('decrementRoomActivity')(roomName)
         broadcastRequest(client, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                     "TOKEN" : client.DATA['RID']})
@@ -138,7 +139,8 @@ def JOIN_ROOM_REQUEST(player, request):
 def LEAVE_ROOM_REQUEST(player, request):
     if player.DATA.get('CURRENT_ROOM', None) in crapsRooms:
         try:
-            crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
+            if player in crapsRooms[player.DATA['CURRENT_ROOM']]:
+                crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
             get('decrementRoomActivity')(player.DATA['CURRENT_ROOM'])
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                         "TOKEN" : player.DATA['RID']})
