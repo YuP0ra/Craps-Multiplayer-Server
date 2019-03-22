@@ -37,11 +37,12 @@ class CrapsTable:
         ridList = [str(rid) for rid in self.ridBets]
         return {"TYPE"      : "TABLE_INFO",
                 "MARKER"    : str(self.marker),
+                "COMEROLL"  : str(self.isComeOutRoll),
                 "RID_COUNT" : str(len(ridList)),
                 "RIDS_LIST" : ridList,
                 "LIST_DICT" : [str(self.ridBets[rid]) for rid in self.ridBets]
                 }
-    
+
     def MarkerInfo(self):
         return {"TYPE"      : "MARKER_INFO",
                 "MARKER"    : str(self.marker)}
