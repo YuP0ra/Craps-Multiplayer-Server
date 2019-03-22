@@ -3,6 +3,7 @@ import random
 import secrets
 from threading import Thread
 from Kernel.database import get, set
+<<<<<<< HEAD
 
 ################################################################################
 class CrapsTable:
@@ -48,6 +49,9 @@ class CrapsTable:
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "MARKER"    : str(self.marker)}
 
+=======
+from Utils.CrapsClasses import CrapsTable
+>>>>>>> 8baa3dae5060235499bb1c37ca3061739120a2ec
 
 ################################################################################
 tokensDB, crapsRooms, crapsRoomsTable = {}, {}, {}
@@ -58,40 +62,49 @@ def init():
     for roomName in get('roomsInfo')['rooms_name']:
         crapsRooms[roomName] = []
         crapsRoomsTable[roomName] = CrapsTable()
-        Thread(target=runRoom, args=(roomName,)).start()
+        Thread(target=runRoom,
+               args=(crapsRooms[roomName], crapsRoomsTable[roomName],)).start()
 
 
-def runRoom(roomName):
+def runRoom(roomPlayers, table):
     ROUND_TIME, CALCULATIONS_TIME = 15, 10
 
     while True:
         initTime = time.time()
         ############ Betiing Starts
-        if len(crapsRooms[roomName]) == 0:
-            crapsRoomsTable[roomName].Reset()
+        if len(roomPlayers) == 0:
+            table.Reset()
             time.sleep(1)
             continue
         else:
-            for player in crapsRooms[roomName]:
+            for player in roomPlayers:
                 player.send_data({"TYPE"  :"ROUND_STARTED"})
         ############ Betiing Ends
 
         initTime = sleepExatcly(initTime, ROUND_TIME)
 
         ############ Animation Starts
-        if len(crapsRooms[roomName]) == 0:
+        if len(roomPlayers) == 0:
             continue
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
-        crapsRoomsTable[roomName].Roll(dice1, dice2)
-        for player in crapsRooms[roomName]:
+        for player in roomPlayers:
             player.send_data({
                                 "TYPE"  :"DICE_ROLLED",
                                 "DICE1" :str(dice1),
                                 "DICE2" :str(dice2)
                              })
 
-            player.send_data(crapsRoomsTable[roomName].MarkerInfo())
+            table.Roll(dice1, dice2)
+
+            player.send_data({
+                                "TYPE"  : "ROUND_RESULT",
+                                "WIN"   : str(table.roundResultsWIN),
+                                "PUSH"  : str(table.roundResultsPUSH),
+                                "LOSE"  : str(table.roundResultsLOSE)
+                             })
+
+            player.send_data(table.MarkerInfo())
         ############ Animation Ends
         initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
 
@@ -113,7 +126,6 @@ def broadcastRequest(sender, request):
 ################################################################################
 def onConnectionEnded(client):
     roomName = client.DATA.get('CURRENT_ROOM', None)
-    print(roomName, "END")
     if roomName is not None:
         if client in crapsRooms[roomName]:
             crapsRooms[roomName].remove(client)
@@ -124,7 +136,6 @@ def onConnectionEnded(client):
 
 
 def JOIN_ROOM_REQUEST(player, request):
-    print(request)
     if request['ROOM_NAME'] not in crapsRooms:
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
@@ -163,7 +174,6 @@ def LEAVE_ROOM_REQUEST(player, request):
             player.DATA['CURRENT_ROOM'] = None
             tokensDB.pop(player.TOKEN, None)
         except Exception as e:
-            print(e)
             pass
 
 
