@@ -37,13 +37,15 @@ class CrapsTable:
         ridList = [str(rid) for rid in self.ridBets]
         return {"TYPE"      : "TABLE_INFO",
                 "MARKER"    : str(self.marker),
+                "COMEROLL"  : str(self.isComeOutRoll),
                 "RID_COUNT" : str(len(ridList)),
                 "RIDS_LIST" : ridList,
                 "LIST_DICT" : [str(self.ridBets[rid]) for rid in self.ridBets]
                 }
-    
+
     def MarkerInfo(self):
         return {"TYPE"      : "MARKER_INFO",
+                "COMEROLL"  : str(self.isComeOutRoll),
                 "MARKER"    : str(self.marker)}
 
 
@@ -111,6 +113,7 @@ def broadcastRequest(sender, request):
 ################################################################################
 def onConnectionEnded(client):
     roomName = client.DATA.get('CURRENT_ROOM', None)
+    print(roomName, "END")
     if roomName is not None:
         if client in crapsRooms[roomName]:
             crapsRooms[roomName].remove(client)
@@ -121,6 +124,7 @@ def onConnectionEnded(client):
 
 
 def JOIN_ROOM_REQUEST(player, request):
+    print(request)
     if request['ROOM_NAME'] not in crapsRooms:
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
@@ -152,13 +156,14 @@ def LEAVE_ROOM_REQUEST(player, request):
         try:
             if player in crapsRooms[player.DATA['CURRENT_ROOM']]:
                 crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
-            crapsRoomsTable[player.DATA['CURRENT_ROOM']].RemovePlayer(client.DATA['RID'])
+            crapsRoomsTable[player.DATA['CURRENT_ROOM']].RemovePlayer(player.DATA['RID'])
             get('decrementRoomActivity')(player.DATA['CURRENT_ROOM'])
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                         "TOKEN" : player.DATA['RID']})
             player.DATA['CURRENT_ROOM'] = None
             tokensDB.pop(player.TOKEN, None)
         except Exception as e:
+            print(e)
             pass
 
 
@@ -181,10 +186,8 @@ def ROOM_PLAYERS_INFO(player, request):
 
 def ROOM_TABLE_INFO(player, request):
     roomNmae = player.DATA.get('CURRENT_ROOM', None)
-    print("GOT REQUEST. CURRENT ROOM IS: ", player.DATA.get('CURRENT_ROOM', None))
     if roomNmae in crapsRoomsTable:
         player.send_data(crapsRoomsTable[roomNmae].JsonTableInfo())
-        print("SHOULD HAVE SENT THE FOLLOWING DATA: " , crapsRoomsTable[roomNmae].JsonTableInfo())
 
 
 def CRAPS_BET(client, request):
