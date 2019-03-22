@@ -65,14 +65,14 @@ class CrapsTable:
 
         if firstRoll:
             if totalDices in [7, 11]:
-                self.WIN('passline')
+                self.WIN(rid, 'passline')
             elif totalDices in [2, 3, 12]:
-                self.LOSE('passline')
+                self.LOSE(rid, 'passline')
         else:
             if totalDices == targetPoint:
-                self.WIN('passline')
+                self.WIN(rid, 'passline')
             elif totalDices == 7:
-                self.LOSE('passline')
+                self.LOSE(rid, 'passline')
 
     def CheckDontPassLine(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'dontpassline') <= 0:
@@ -80,125 +80,124 @@ class CrapsTable:
 
         if firstRoll:
             if totalDices in [2, 3]:
-                self.WIN('dontpassline')
+                self.WIN(rid, 'dontpassline')
             elif totalDices in [7, 11]:
-                self.LOSE('dontpassline')
+                self.LOSE(rid, 'dontpassline')
             elif totalDices in [12]:
-                self.PUSH('dontpassline')
+                self.PUSH(rid, 'dontpassline')
         else:
             if totalDices == targetPoint:
-                self.LOSE('dontpassline')
+                self.LOSE(rid, 'dontpassline')
             elif totalDices == 7:
-                self.WIN('dontpassline')
+                self.WIN(rid, 'dontpassline')
 
     def CheckStatusBig6(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'big6') <= 0:
             return
         else:
-            if totalDices in [6]: self.WIN('big6')
-            if totalDices in [7]: self.LOSE('big6')
+            if totalDices in [6]: self.WIN(rid, 'big6')
+            if totalDices in [7]: self.LOSE(rid, 'big6')
 
     def CheckStatusBig8(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'big8') <= 0:
             return
         else:
-            if totalDices in [8]: self.WIN('big8')
-            if totalDices in [7]: self.LOSE('big8')
+            if totalDices in [8]: self.WIN(rid, 'big8')
+            if totalDices in [7]: self.LOSE(rid, 'big8')
 
     def CheckStatusLay(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
-            if self.BetValue('lay' + str(totalDices)) > 0:
-                self.LOSE('lay' + str(totalDices))
+            if self.BetValue(rid,'lay' + str(totalDices)) > 0:
+                self.LOSE(rid, 'lay' + str(totalDices))
 
         if totalDices == 7:
             for odd in  [4, 5, 6, 8, 9, 10]:
-                if self.BetValue('lay' + str(odd)) > 0:
-                    self.WIN('lay' + str(odd))
+                if self.BetValue(rid,'lay' + str(odd)) > 0:
+                    self.WIN(rid, 'lay' + str(odd))
 
     def CheckStatusBuy(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
-            if self.BetValue('lay' + str(totalDices)) > 0:
-                self.WIN('lay' + str(totalDices))
+            if self.BetValue(rid,'buy' + str(totalDices)) > 0:
+                self.WIN(rid, 'buy' + str(totalDices))
 
         if totalDices == 7:
             for odd in  [4, 5, 6, 8, 9, 10]:
-                if self.BetValue('lay' + str(odd)) > 0:
-                    self.LOSE('lay' + str(odd))
+                if self.BetValue(rid,'buy' + str(odd)) > 0:
+                    self.LOSE(rid, 'buy' + str(odd))
 
     def CheckStatusFieldLine(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'field') <= 0:
             return
         else:
             if totalDices in [2, 3, 4, 9, 10, 11, 12]:
-                self.WIN('field')
+                self.WIN(rid, 'field')
             else:
-                self.LOSE('field')
+                self.LOSE(rid, 'field')
 
     def CheckPropositionBets(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'prop0') > 0:
             if totalDices == 2 or totalDices == 3 or totalDices == 12:
-                self.WIN('prop0');
+                self.WIN(rid, 'prop0');
             else:
-                self.LOSE('prop0');
+                self.LOSE(rid, 'prop0');
 
         if self.BetValue(rid, 'prop2') > 0:
             if totalDices == 2:
-                self.WIN('prop2');
+                self.WIN(rid, 'prop2');
             else:
-                self.LOSE('prop2');
+                self.LOSE(rid, 'prop2');
 
         if self.BetValue(rid, 'prop3') > 0:
             if totalDices == 3:
-                self.WIN('prop3');
+                self.WIN(rid, 'prop3');
             else:
-                self.LOSE('prop3');
+                self.LOSE(rid, 'prop3');
 
         if self.BetValue(rid, 'prop7') > 0:
             if totalDices == 7:
-                self.WIN('prop7');
+                self.WIN(rid, 'prop7');
             else:
-                self.LOSE('prop7');
+                self.LOSE(rid, 'prop7');
 
         if self.BetValue(rid, 'prop11') > 0:
             if totalDices == 11:
-                self.WIN('prop11');
+                self.WIN(rid, 'prop11');
             else:
-                self.LOSE('prop11');
+                self.LOSE(rid, 'prop11');
 
         if self.BetValue(rid, 'prop12') > 0:
             if totalDices == 12:
-                self.WIN('prop12');
+                self.WIN(rid, 'prop12');
             else:
-                self.LOSE('prop12');
+                self.LOSE(rid, 'prop12');
 
     def CheckStatusHardway(self, rid, firstRoll, targetPoint, dice1, dice2):
         for num in [4, 6, 8, 10]:
             hardline = 'hard' + str(num)
             if self.BetValue(rid, hardline) > 0:
                 if (dice1 + dice2) == 7:
-                    self.LOSE(hardline)
+                    self.LOSE(rid, hardline)
 
                 if (dice1 + dice2) == num:
                     if dice1 == dice2:
-                        self.WIN(hardline)
+                        self.WIN(rid, hardline)
                     else:
-                        self.LOSE(hardline)
-
+                        self.LOSE(rid, hardline)
 
     def ClearRoundResults(self):
         self.roundResultsWIN = []
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
 
-    def WIN(self, line):
+    def WIN(self, rid, line):
         self.roundResultsWIN.append(line)
         self.ClearTableBet(rid, line)
 
-    def PUSH(self, line):
+    def PUSH(self, rid, line):
         self.roundResultsPUSH.append(line)
         self.ClearTableBet(rid, line)
 
-    def LOSE(self, line):
+    def LOSE(self, rid, line):
         self.roundResultsLOSE.append(line)
         self.ClearTableBet(rid, line)
 
@@ -210,11 +209,9 @@ class CrapsTable:
         self.ridBets[rid][bet] += amount
 
     def ClearTableBet(self, rid, bet):
-        if rid not in self.ridBets:
-            self.ridBets[rid] = {}
-        if bet not in self.ridBets[rid]:
-            self.ridBets[rid][bet] = 0
-        self.ridBets[rid][bet] = 0
+        if rid in self.ridBets:
+            if bet in self.ridBets[rid]:
+                self.ridBets[rid][bet] = 0
 
     def RemovePlayer(self, rid):
         if rid in self.ridBets:
@@ -234,3 +231,31 @@ class CrapsTable:
         return {"TYPE"      : "MARKER_INFO",
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "MARKER"    : str(self.marker)}
+
+
+# t = CrapsTable()
+#
+# for i in range(10):
+#     d1, d2 = random.randint(1, 6), random.randint(1, 6)
+#     t.UpdateTableBet('123', 'big6', 10)
+#     t.UpdateTableBet('123', 'big8', 30)
+#     t.UpdateTableBet('123', 'passline', 10)
+#     t.UpdateTableBet('123', 'dontpassline', 30)
+#     t.UpdateTableBet('123', 'field', 10)
+#     t.UpdateTableBet('123', 'prop2', 30)
+#     t.UpdateTableBet('123', 'prop3', 30)
+#     t.UpdateTableBet('123', 'prop7', 30)
+#     t.UpdateTableBet('123', 'prop11', 30)
+#
+#     t.UpdateTableBet('13', 'big6', 10)
+#     t.UpdateTableBet('13', 'big8', 30)
+#     t.UpdateTableBet('13', 'passline', 10)
+#     t.UpdateTableBet('13', 'dontpassline', 30)
+#     t.UpdateTableBet('13', 'field', 10)
+#     t.UpdateTableBet('13', 'prop2', 30)
+#     t.UpdateTableBet('13', 'prop3', 30)
+#     t.UpdateTableBet('13', 'prop7', 30)
+#     t.UpdateTableBet('13', 'prop11', 30)
+#
+#     t.Roll(d1, d2)
+#     print(d1+ d2, t.roundResultsWIN)

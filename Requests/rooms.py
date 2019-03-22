@@ -14,40 +14,41 @@ def init():
     for roomName in get('roomsInfo')['rooms_name']:
         crapsRooms[roomName] = []
         crapsRoomsTable[roomName] = CrapsTable()
-        Thread(target=runRoom, args=(roomName,)).start()
+        Thread(target=runRoom,
+               args=(crapsRooms[roomName], crapsRoomsTable[roomName],)).start()
 
 
-def runRoom(roomName):
+def runRoom(roomPlayers, table):
     ROUND_TIME, CALCULATIONS_TIME = 15, 10
 
     while True:
         initTime = time.time()
         ############ Betiing Starts
-        if len(crapsRooms[roomName]) == 0:
-            crapsRoomsTable[roomName].Reset()
+        if len(roomPlayers) == 0:
+            table.Reset()
             time.sleep(1)
             continue
         else:
-            for player in crapsRooms[roomName]:
+            for player in roomPlayers:
                 player.send_data({"TYPE"  :"ROUND_STARTED"})
         ############ Betiing Ends
 
         initTime = sleepExatcly(initTime, ROUND_TIME)
 
         ############ Animation Starts
-        if len(crapsRooms[roomName]) == 0:
+        if len(roomPlayers) == 0:
             continue
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
-        crapsRoomsTable[roomName].Roll(dice1, dice2)
-        for player in crapsRooms[roomName]:
+        table.Roll(dice1, dice2)
+        for player in roomPlayers:
             player.send_data({
                                 "TYPE"  :"DICE_ROLLED",
                                 "DICE1" :str(dice1),
                                 "DICE2" :str(dice2)
                              })
 
-            player.send_data(crapsRoomsTable[roomName].MarkerInfo())
+            player.send_data(table.MarkerInfo())
         ############ Animation Ends
         initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
 
