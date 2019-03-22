@@ -95,7 +95,7 @@ class CrapsTable:
             self.WIN(rid, 'come' + totalDices)
             self.WIN(rid, 'come' + totalDices + 'odds')
 
-        if (diceTotal == 7)
+        if (diceTotal == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'come' + odd)
                 self.LOSE(rid, 'come' + odd + 'odds')
@@ -111,7 +111,7 @@ class CrapsTable:
             self.LOSE(rid, 'dontcome' + totalDices)
             self.LOSE(rid, 'dontcome' + totalDices + 'odds')
 
-        if (diceTotal == 7)
+        if (diceTotal == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.WIN(rid, 'dontcome' + odd)
                 self.WIN(rid, 'dontcome' + odd + 'odds')
