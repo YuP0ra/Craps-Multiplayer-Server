@@ -35,8 +35,8 @@ class CrapsTable:
             self.CheckStatusBig6(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckStatusBig8(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
 
-            self.CheckStatusBig6(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-            self.CheckStatusBig8(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
+            self.CheckStatusFieldLine(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
+            self.CheckPropositionBets(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
 
             self.CheckStatusLay(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckStatusBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
