@@ -31,7 +31,7 @@ class CrapsTable:
 
     def RemovePlayer(self, rid):
         if rid in self.ridBets:
-            self.ridBets.remove(rid)
+            self.ridBets.pop(rid)
 
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
@@ -133,6 +133,7 @@ def JOIN_ROOM_REQUEST(player, request):
             get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
             player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "TOKEN": player.DATA['RID'], "ROOM_NAME": request['ROOM_NAME']})
+            player.send_data(crapsRoomsTable[request['ROOM_NAME']].MarkerInfo())
             tokensDB[player.TOKEN] = request['ROOM_NAME']
 
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
