@@ -216,7 +216,7 @@ class CrapsTable:
 
     def RemovePlayer(self, rid):
         if rid in self.ridBets:
-            self.ridBets.remove(rid)
+            del self.ridBets[rid]
 
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
