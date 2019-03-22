@@ -29,6 +29,10 @@ class CrapsTable:
         if bet not in self.ridBets[rid]:    self.ridBets[rid][bet] = 0
         self.ridBets[rid][bet] +=           amount
 
+    def RemovePlayer(self, rid):
+        if rid in self.ridBets:
+            self.ridBets.remove(rid)
+
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
         return {"TYPE"      : "TABLE_INFO",
@@ -97,7 +101,6 @@ def sleepExatcly(initTime, amount):
 
 def broadcastRequest(sender, request):
     roomName = sender.DATA.get('CURRENT_ROOM', None)
-    print("Broadcasting request ", request["TYPE"])
     if roomName is not None:
         for player in crapsRooms[roomName]:
             if not sender.TOKEN == player.TOKEN:
@@ -109,7 +112,9 @@ def broadcastRequest(sender, request):
 def onConnectionEnded(client):
     roomName = client.DATA.get('CURRENT_ROOM', None)
     if roomName is not None:
-        crapsRooms[roomName].remove(client)
+        if client in crapsRooms[roomName]:
+            crapsRooms[roomName].remove(client)
+        crapsRoomsTable[roomName].RemovePlayer(client.DATA['RID'])
         get('decrementRoomActivity')(roomName)
         broadcastRequest(client, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                     "TOKEN" : client.DATA['RID']})
@@ -144,7 +149,9 @@ def JOIN_ROOM_REQUEST(player, request):
 def LEAVE_ROOM_REQUEST(player, request):
     if player.DATA.get('CURRENT_ROOM', None) in crapsRooms:
         try:
-            crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
+            if player in crapsRooms[player.DATA['CURRENT_ROOM']]:
+                crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
+            crapsRoomsTable[player.DATA['CURRENT_ROOM']].RemovePlayer(client.DATA['RID'])
             get('decrementRoomActivity')(player.DATA['CURRENT_ROOM'])
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                         "TOKEN" : player.DATA['RID']})
