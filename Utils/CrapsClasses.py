@@ -190,15 +190,16 @@ class CrapsTable:
         self.roundResultsLOSE = []
 
     def WIN(self, rid, line):
-        self.roundResultsWIN.append(line)
+        self.roundResultsWIN.append([rid, line])
         self.ClearTableBet(rid, line)
 
     def PUSH(self, rid, line):
-        self.roundResultsPUSH.append(line)
+        self.roundResultsPUSH.append([rid, line])
         self.ClearTableBet(rid, line)
 
     def LOSE(self, rid, line):
         self.roundResultsLOSE.append(line)
+        self.roundResultsLOSE.append([rid, line])
         self.ClearTableBet(rid, line)
 
     def UpdateTableBet(self, rid, bet, amount):
