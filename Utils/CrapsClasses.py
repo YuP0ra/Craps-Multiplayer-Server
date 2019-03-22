@@ -95,15 +95,15 @@ class CrapsTable:
             self.WIN(rid, 'come' + str(totalDices))
             self.WIN(rid, 'come' + str(totalDices) + 'odds')
 
-        if (diceTotal == 7):
+        if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'come' + str(odd))
                 self.LOSE(rid, 'come' + str(odd) + 'odds')
 
         if not firstRoll and self.BetValue(rid, 'come'):
-            if diceTotal in [7, 11]:
+            if totalDices in [7, 11]:
                 self.WIN(rid, 'come')
-            elif diceTotal in [2, 3, 12]:
+            elif totalDices in [2, 3, 12]:
                 self.LOSE(rid, 'come')
 
     def CheckDontCome(self, rid, firstRoll, targetPoint, totalDices):
@@ -111,17 +111,17 @@ class CrapsTable:
             self.LOSE(rid, 'dontcome' + str(totalDices))
             self.LOSE(rid, 'dontcome' + str(totalDices) + 'odds')
 
-        if (diceTotal == 7):
+        if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.WIN(rid, 'dontcome' + str(odd))
                 self.WIN(rid, 'dontcome' + str(odd) + 'odds')
 
         if not firstRoll and self.BetValue(rid, 'dontcome'):
-            if diceTotal in [2, 3]:
+            if totalDices in [2, 3]:
                 self.WIN(rid, 'dontcome')
-            elif diceTotal in [7, 11]:
+            elif totalDices in [7, 11]:
                 self.LOSE(rid, 'dontcome')
-            elif diceTotal in [12]:
+            elif totalDices in [12]:
                 self.PUSH(rid, 'dontcome')
 
     def CheckBig6(self, rid, firstRoll, targetPoint, totalDices):
@@ -254,3 +254,33 @@ class CrapsTable:
         return {"TYPE"      : "MARKER_INFO",
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "MARKER"    : str(self.marker)}
+
+
+
+
+# t = CrapsTable()
+#
+# for i in range(10):
+#     d1, d2 = random.randint(1, 6), random.randint(1, 6)
+#     t.UpdateTableBet('123', 'big6', 10)
+#     t.UpdateTableBet('123', 'big8', 30)
+#     t.UpdateTableBet('123', 'passline', 10)
+#     t.UpdateTableBet('123', 'dontpassline', 30)
+#     t.UpdateTableBet('123', 'field', 10)
+#     t.UpdateTableBet('123', 'prop2', 30)
+#     t.UpdateTableBet('123', 'prop3', 30)
+#     t.UpdateTableBet('123', 'prop7', 30)
+#     t.UpdateTableBet('123', 'prop11', 30)
+#
+#     t.UpdateTableBet('13', 'big6', 10)
+#     t.UpdateTableBet('13', 'big8', 30)
+#     t.UpdateTableBet('13', 'passline', 10)
+#     t.UpdateTableBet('13', 'dontpassline', 30)
+#     t.UpdateTableBet('13', 'field', 10)
+#     t.UpdateTableBet('13', 'prop2', 30)
+#     t.UpdateTableBet('13', 'prop3', 30)
+#     t.UpdateTableBet('13', 'prop7', 30)
+#     t.UpdateTableBet('13', 'prop11', 30)
+#
+#     t.Roll(d1, d2)
+#     print(d1+ d2, t.roundResultsWIN)
