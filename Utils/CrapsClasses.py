@@ -92,13 +92,13 @@ class CrapsTable:
 
     def CheckCome(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
-            self.WIN(rid, 'come' + totalDices)
-            self.WIN(rid, 'come' + totalDices + 'odds')
+            self.WIN(rid, 'come' + str(totalDices))
+            self.WIN(rid, 'come' + str(totalDices) + 'odds')
 
         if (diceTotal == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
-                self.LOSE(rid, 'come' + odd)
-                self.LOSE(rid, 'come' + odd + 'odds')
+                self.LOSE(rid, 'come' + str(odd))
+                self.LOSE(rid, 'come' + str(odd) + 'odds')
 
         if not firstRoll and self.BetValue(rid, 'come'):
             if diceTotal in [7, 11]:
@@ -108,13 +108,13 @@ class CrapsTable:
 
     def CheckDontCome(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
-            self.LOSE(rid, 'dontcome' + totalDices)
-            self.LOSE(rid, 'dontcome' + totalDices + 'odds')
+            self.LOSE(rid, 'dontcome' + str(totalDices))
+            self.LOSE(rid, 'dontcome' + str(totalDices) + 'odds')
 
         if (diceTotal == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
-                self.WIN(rid, 'dontcome' + odd)
-                self.WIN(rid, 'dontcome' + odd + 'odds')
+                self.WIN(rid, 'dontcome' + str(odd))
+                self.WIN(rid, 'dontcome' + str(odd) + 'odds')
 
         if not firstRoll and self.BetValue(rid, 'dontcome'):
             if diceTotal in [2, 3]:
