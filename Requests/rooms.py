@@ -40,14 +40,14 @@ def runRoom(roomPlayers, table):
             continue
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
+        table.Roll(dice1, dice2)
+
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"  :"DICE_ROLLED",
                                 "DICE1" :str(dice1),
                                 "DICE2" :str(dice2)
                              })
-
-            table.Roll(dice1, dice2)
 
             player.send_data({
                                 "TYPE"  : "ROUND_RESULT",
