@@ -52,6 +52,7 @@ def runRoom(roomPlayers, table):
             player.send_data({
                                 "TYPE"  : "ROUND_RESULT",
                                 "WIN"   : str(table.roundResultsWIN),
+                                "MOVE"  : str(table.roundResultsMOVE),
                                 "PUSH"  : str(table.roundResultsPUSH),
                                 "LOSE"  : str(table.roundResultsLOSE)
                              })
