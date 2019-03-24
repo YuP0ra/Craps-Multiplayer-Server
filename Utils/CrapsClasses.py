@@ -279,29 +279,25 @@ class CrapsTable:
 
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
-        listDict = []
-        for rid in self.ridBets:
-            listDict.append(str(self.ridBets[rid]))
-
         return {"TYPE"      : "TABLE_INFO",
                 "MARKER"    : str(self.marker),
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "RID_COUNT" : str(len(ridList)),
                 "RIDS_LIST" : ridList,
-                "LIST_DICT" : listDict
                 }
 
-    def PlayerBets(self, request):
-        betNames = []
-        betValues = []
-        for key, value in self.ridBets[request["TARGET_TOKEN"]].items():
-            betNames.append(key)
-            betValues.append(value)
+    def JsonPlayerBets(self, rid):
+        if rid in self.ridBets:
+            betNames = []
+            betValues = []
+            for key, value in self.ridBets[rid].items():
+                betNames.append(key)
+                betValues.append(value)
 
-        return {"TYPE"      : "PLAYER_BETS",
-                "TOKEN"     : request["TARGET_TOKEN"],
-                "BET_NAMES" : betNames,
-                "BET_VALUES": betValues}
+            return {"TYPE"      : "PLAYER_BETS",
+                    "TOKEN"     : request["TARGET_TOKEN"],
+                    "BET_NAMES" : betNames,
+                    "BET_VALUES": betValues}
 
     def MarkerInfo(self):
         return {"TYPE"      : "MARKER_INFO",

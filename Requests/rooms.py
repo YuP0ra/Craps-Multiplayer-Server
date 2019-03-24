@@ -158,7 +158,7 @@ def ROOM_TABLE_INFO(player, request):
 def PLAYER_BETS(player, request):
     roomNmae = player.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
-        player.send_data(crapsRoomsTable[roomNmae].PlayerBets(request))
+        player.send_data(crapsRoomsTable[roomNmae].JsonPlayerBets(request["TARGET_TOKEN"]))
 
 
 def CRAPS_BET(client, request):
