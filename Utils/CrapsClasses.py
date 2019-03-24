@@ -30,7 +30,6 @@ class CrapsTable:
 
         self.ClearRoundResults()
         totalDices = dice1 + dice2
-        roundWinLosePushResults = {}
 
         for rid in self.ridBets:
             self.CheckBig6(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
@@ -226,7 +225,10 @@ class CrapsTable:
         self.roundResultsWIN = []
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
+        self.roundResultsWIN = []
         self.roundResultsMOVE = []
+        self.roundResultsPUSH = []
+        self.roundResultsLOSE = []
 
     def WIN(self, rid, line, factor=1):
         moneyOnLine = int(self.BetValue(rid, line) * (1 + factor))
@@ -291,22 +293,18 @@ class CrapsTable:
                 "RIDS_LIST" : ridList,
                 "LIST_DICT" : listDict
                 }
-    
+
     def PlayerBets(self, request):
         betNames = []
         betValues = []
-        print("ridBets length is: ", len(self.ridBets))
-        for item in self.ridBets:
-            print("ridBets item is: ", item, " And I'm gonna try to find " , request["TARGET_TOKEN"])
-        if len(self.ridBets) > 0:
-            for key, value in self.ridBets[request["TARGET_TOKEN"]].items():
-                betNames.append(key)
-                betValues.append(value)
+        for key, value in self.ridBets[request["TARGET_TOKEN"]].items():
+            betNames.append(key)
+            betValues.append(value)
+
         return {"TYPE"      : "PLAYER_BETS",
                 "TOKEN"     : request["TARGET_TOKEN"],
                 "BET_NAMES" : betNames,
-                "BET_VALUES" : betValues
-                }
+                "BET_VALUES": betValues}
 
     def MarkerInfo(self):
         return {"TYPE"      : "MARKER_INFO",
@@ -318,7 +316,7 @@ class CrapsTable:
 
 # t = CrapsTable()
 #
-# for i in range(1000):
+# for i in range(100):
 #     d1, d2 = random.randint(1, 6), random.randint(1, 6)
 #     t.UpdateTableBet('123', 'buy4', 10)
 #     t.UpdateTableBet('123', 'buy8', 10)
