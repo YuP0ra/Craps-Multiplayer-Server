@@ -286,7 +286,7 @@ class CrapsTable:
                 "RIDS_LIST" : ridList,
                 }
 
-    def PlayerBets(self, rid):
+    def JsonPlayerBets(self, rid):
         betNames = []
         betValues = []
         if rid in self.ridBets:
