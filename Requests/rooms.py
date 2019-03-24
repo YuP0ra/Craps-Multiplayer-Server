@@ -56,6 +56,8 @@ def runRoom(roomPlayers, table):
                                 "MOVE"  : str(table.roundResultsMOVE)
                              })
 
+            player.send_data(table.MarkerInfo())
+
         CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.2 + len(table.roundResultsLOSE) * .2
         ############ Animation Ends
 
