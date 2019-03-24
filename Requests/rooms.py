@@ -58,7 +58,7 @@ def runRoom(roomPlayers, table):
 
             player.send_data(table.MarkerInfo())
 
-        CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.23 + len(table.roundResultsLOSE) * .23
+        CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
         ############ Animation Ends
 
         initTime = sleepExatcly(initTime, CALCULATIONS_TIME)
