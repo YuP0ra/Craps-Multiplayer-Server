@@ -289,7 +289,7 @@ class CrapsTable:
     def PlayerBets(self, rid):
         betNames = []
         betValues = []
-        if len(self.ridBets) > 0:
+        if rid in self.ridBets:
             for key, value in self.ridBets[rid].items():
                 betNames.append(key)
                 betValues.append(value)
