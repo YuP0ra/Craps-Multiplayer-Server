@@ -26,7 +26,7 @@ def runRoom(roomPlayers, table):
         ############ Betiing Starts
         if len(roomPlayers) == 0:
             table.Reset()
-            time.sleep(1)
+            time.sleep(3)
             continue
         else:
             for player in roomPlayers:
