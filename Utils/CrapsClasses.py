@@ -225,10 +225,7 @@ class CrapsTable:
         self.roundResultsWIN = []
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
-        self.roundResultsWIN = []
         self.roundResultsMOVE = []
-        self.roundResultsPUSH = []
-        self.roundResultsLOSE = []
 
     def WIN(self, rid, line, factor=1):
         moneyOnLine = int(self.BetValue(rid, line) * (1 + factor))
