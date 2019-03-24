@@ -226,6 +226,7 @@ class CrapsTable:
         self.roundResultsWIN = []
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
+        self.roundResultsMOVE = []
 
     def WIN(self, rid, line, factor=1):
         moneyOnLine = int(self.BetValue(rid, line) * (1 + factor))
@@ -279,12 +280,32 @@ class CrapsTable:
 
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
+        listDict = []
+        for rid in self.ridBets:
+            listDict.append(str(self.ridBets[rid]))
+
         return {"TYPE"      : "TABLE_INFO",
                 "MARKER"    : str(self.marker),
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "RID_COUNT" : str(len(ridList)),
                 "RIDS_LIST" : ridList,
-                "LIST_DICT" : [str(self.ridBets[rid]) for rid in self.ridBets]
+                "LIST_DICT" : listDict
+                }
+    
+    def PlayerBets(self, request):
+        betNames = []
+        betValues = []
+        print("ridBets length is: ", len(self.ridBets))
+        for item in self.ridBets:
+            print("ridBets item is: ", item, " And I'm gonna try to find " , request["TARGET_TOKEN"])
+        if len(self.ridBets) > 0:
+            for key, value in self.ridBets[request["TARGET_TOKEN"]].items():
+                betNames.append(key)
+                betValues.append(value)
+        return {"TYPE"      : "PLAYER_BETS",
+                "TOKEN"     : request["TARGET_TOKEN"],
+                "BET_NAMES" : betNames,
+                "BET_VALUES" : betValues
                 }
 
     def MarkerInfo(self):

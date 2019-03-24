@@ -41,7 +41,6 @@ def runRoom(roomPlayers, table):
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
         table.Roll(dice1, dice2)
-
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"  :"DICE_ROLLED",
@@ -49,12 +48,23 @@ def runRoom(roomPlayers, table):
                                 "DICE2" :str(dice2)
                              })
 
+            
+
+            print("About to send the following data to player ", player)
+            print("Data is: ", {
+                                "TYPE"  : "ROUND_RESULT",
+                                "WIN"   : str(table.roundResultsWIN),
+                                "PUSH"  : str(table.roundResultsPUSH),
+                                "LOSE"  : str(table.roundResultsLOSE),
+                                "MOVE"  : str(table.roundResultsMOVE)
+                             })
+
             player.send_data({
                                 "TYPE"  : "ROUND_RESULT",
                                 "WIN"   : str(table.roundResultsWIN),
-                                "MOVE"  : str(table.roundResultsMOVE),
                                 "PUSH"  : str(table.roundResultsPUSH),
-                                "LOSE"  : str(table.roundResultsLOSE)
+                                "LOSE"  : str(table.roundResultsLOSE),
+                                "MOVE"  : str(table.roundResultsMOVE)
                              })
 
             player.send_data(table.MarkerInfo())
@@ -151,6 +161,11 @@ def ROOM_TABLE_INFO(player, request):
     roomNmae = player.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
         player.send_data(crapsRoomsTable[roomNmae].JsonTableInfo())
+
+def PLAYER_BETS(player, request):
+    roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    if roomNmae in crapsRoomsTable:
+        player.send_data(crapsRoomsTable[roomNmae].PlayerBets(request))
 
 
 def CRAPS_BET(client, request):
