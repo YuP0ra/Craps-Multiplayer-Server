@@ -294,9 +294,10 @@ class CrapsTable:
     def PlayerBets(self, request):
         betNames = []
         betValues = []
-        for key, value in self.ridBets[request["TARGET_TOKEN"]].items():
-            betNames.append(key)
-            betValues.append(value)
+        if len(self.ridBets) > 0:
+            for key, value in self.ridBets[request["TARGET_TOKEN"]].items():
+                betNames.append(key)
+                betValues.append(value)
 
         return {"TYPE"      : "PLAYER_BETS",
                 "TOKEN"     : request["TARGET_TOKEN"],
