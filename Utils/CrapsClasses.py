@@ -32,22 +32,19 @@ class CrapsTable:
         totalDices = dice1 + dice2
 
         for rid in self.ridBets:
+            self.CheckLay(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckBig6(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckBig8(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-
+            self.CheckCome(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
+            self.CheckPassLine(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
+            self.CheckDontCome(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckFieldLine(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
+            self.CheckDontPassLine(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckPropositionBets(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
 
-            self.CheckLay(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-            self.CheckBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-
-            self.CheckPassLine(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-            self.CheckDontPassLine(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-
-            self.CheckCome(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-            self.CheckDontCome(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
-
-            self.CheckStatusHardway(rid, tmpIsComeOutRoll, tmpMarker, dice1, dice2)
+            if not tmpIsComeOutRoll:
+                self.CheckBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
+                self.CheckStatusHardway(rid, tmpIsComeOutRoll, tmpMarker, dice1, dice2)
 
     def BetValue(self, rid, betName):
         """Takes Room ID and Line, returns the bets on it"""
@@ -100,12 +97,19 @@ class CrapsTable:
         if totalDices in [4, 5, 6, 8, 9, 10]:
             payout = {4:2, 5:3/2, 6:6/5, 8:6/5, 9:3/2, 10:2}
             self.WIN(rid, 'come' + str(totalDices), payout[totalDices])
-            self.WIN(rid, 'come' + str(totalDices) + 'odds', payout[totalDices])
+            if not firstRoll:
+                self.WIN(rid, 'come' + str(totalDices) + 'odds', payout[totalDices])
+            else:
+                self.PUSH(rid, 'come' + str(totalDices) + 'odds')
 
         if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'come' + str(odd))
-                self.LOSE(rid, 'come' + str(odd) + 'odds')
+                if not firstRoll:
+                    self.LOSE(rid, 'come' + str(odd) + 'odds')
+                else:
+                    self.PUSH(rid, 'come' + str(odd) + 'odds')
+
 
         if not firstRoll and self.BetValue(rid, 'come'):
             if totalDices in [7, 11]:
