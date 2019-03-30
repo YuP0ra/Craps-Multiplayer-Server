@@ -35,7 +35,7 @@ def runRoom(roomPlayers, table):
 
         for i in range(ROUND_TIME):
             player.send_data({
-                                "TYPE"  :"CLOCK_UPDATE"
+                                "TYPE"  :"CLOCK_UPDATE",
                                 "CLOCK" :str(ROUND_TIME - i - 1)
                              })
             initTime = sleepExatcly(initTime, 1)
