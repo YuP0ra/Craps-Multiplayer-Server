@@ -33,7 +33,12 @@ def runRoom(roomPlayers, table):
                 player.send_data({"TYPE"  :"ROUND_STARTED"})
         ############ Betiing Ends
 
-        initTime = sleepExatcly(initTime, ROUND_TIME)
+        for i in range(ROUND_TIME):
+            player.send_data({
+                                "TYPE"  :"CLOCK_UPDATE"
+                                "CLOCK" :str(ROUND_TIME - i - 1)
+                             })
+            initTime = sleepExatcly(initTime, 1)
 
         ############ Animation Starts
         if len(roomPlayers) == 0:
