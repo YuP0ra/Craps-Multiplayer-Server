@@ -46,6 +46,7 @@ class CrapsTable:
                 self.CheckBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
                 self.CheckStatusHardway(rid, tmpIsComeOutRoll, tmpMarker, dice1, dice2)
 
+
     def BetValue(self, rid, betName):
         """Takes Room ID and Line, returns the bets on it"""
         if rid not in self.ridBets:
@@ -54,6 +55,7 @@ class CrapsTable:
             return 0
         else:
             return int(self.ridBets[rid][betName])
+
 
     def CheckPassLine(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'passline') <= 0:
@@ -72,6 +74,7 @@ class CrapsTable:
             elif totalDices == 7:
                 self.LOSE(rid, 'passline')
                 self.LOSE(rid, 'passlineodds')
+
 
     def CheckDontPassLine(self, rid, firstRoll, targetPoint, totalDices):
         if self.BetValue(rid, 'dontpassline') <= 0:
@@ -93,6 +96,7 @@ class CrapsTable:
                 self.LOSE(rid, 'dontpassline')
                 self.LOSE(rid, 'dontpasslineodds')
 
+
     def CheckCome(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
             payout = {4:2, 5:3/2, 6:6/5, 8:6/5, 9:3/2, 10:2}
@@ -110,7 +114,6 @@ class CrapsTable:
                 else:
                     self.PUSH(rid, 'come' + str(odd) + 'odds')
 
-
         if not firstRoll and self.BetValue(rid, 'come'):
             if totalDices in [7, 11]:
                 self.WIN(rid, 'come')
@@ -118,6 +121,7 @@ class CrapsTable:
                 self.LOSE(rid, 'come')
             else:
                 self.MOVE(rid, 'come', 'come' + str(totalDices))
+
 
     def CheckDontCome(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
@@ -140,17 +144,20 @@ class CrapsTable:
             else:
                 self.MOVE(rid, 'dontcome', 'dontcome' + str(totalDices))
 
+
     def CheckBig6(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices == 6:
             self.WIN(rid, 'big6')
         if totalDices == 7:
             self.LOSE(rid, 'big6')
 
+
     def CheckBig8(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices == 8:
             self.WIN(rid, 'big8')
         if totalDices == 7:
             self.LOSE(rid, 'big8')
+
 
     def CheckLay(self, rid, firstRoll, targetPoint, totalDices):
         payout = {4: 19/41, 5: 19/31, 6: 19/25, 8: 19/25, 9: 19/31, 10: 19/41}
@@ -162,6 +169,7 @@ class CrapsTable:
             for odd in  [4, 5, 6, 8, 9, 10]:
                 self.WIN(rid, 'lay' + str(odd), payout[odd])
 
+
     def CheckBuy(self, rid, firstRoll, targetPoint, totalDices):
         payout = {4: 39/20, 5: 7/5, 6: 7/6, 8: 7/6, 9: 7/5, 10: 39/20}
 
@@ -172,6 +180,7 @@ class CrapsTable:
             for odd in  [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'buy' + str(odd))
 
+
     def CheckFieldLine(self, rid, firstRoll, targetPoint, totalDices):
         payout = {2:2, 3:1, 4:1, 9:1, 10:1, 11:1, 12:3}
 
@@ -179,6 +188,7 @@ class CrapsTable:
             self.WIN(rid, 'field', payout[totalDices])
         else:
             self.LOSE(rid, 'field')
+
 
     def CheckPropositionBets(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices == 2 or totalDices == 3 or totalDices == 12:
@@ -211,6 +221,7 @@ class CrapsTable:
         else:
             self.LOSE(rid, 'prop12');
 
+
     def CheckStatusHardway(self, rid, firstRoll, targetPoint, dice1, dice2):
         payout = {4:7, 6:9, 8:9, 10:7}
 
@@ -225,11 +236,13 @@ class CrapsTable:
                 else:
                     self.LOSE(rid, hardline)
 
+
     def ClearRoundResults(self):
         self.roundResultsWIN = []
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
         self.roundResultsMOVE = []
+
 
     def WIN(self, rid, line, factor=1):
         moneyOnLine = int(self.BetValue(rid, line) * (1 + factor))
@@ -239,6 +252,7 @@ class CrapsTable:
             self.roundResultsWIN.append(str(moneyOnLine))
             self.ClearTableBet(rid, line)
 
+
     def PUSH(self, rid, line):
         moneyOnLine = self.BetValue(rid, line)
         if moneyOnLine > 0:
@@ -247,6 +261,7 @@ class CrapsTable:
             self.roundResultsPUSH.append(str(moneyOnLine))
             self.ClearTableBet(rid, line)
 
+
     def LOSE(self, rid, line):
         moneyOnLine = self.BetValue(rid, line)
         if moneyOnLine > 0:
@@ -254,6 +269,7 @@ class CrapsTable:
             self.roundResultsLOSE.append(line)
             self.roundResultsLOSE.append(str(moneyOnLine))
             self.ClearTableBet(rid, line)
+
 
     def MOVE(self, rid, oldLine, newLine):
         moneyOnOldLine = self.BetValue(rid, oldLine)
@@ -265,6 +281,7 @@ class CrapsTable:
             self.roundResultsMOVE.append(newLine)
             self.ClearTableBet(rid, oldLine)
 
+
     def UpdateTableBet(self, rid, bet, amount):
         if rid not in self.ridBets:
             self.ridBets[rid] = {}
@@ -272,14 +289,17 @@ class CrapsTable:
             self.ridBets[rid][bet] = 0
         self.ridBets[rid][bet] += amount
 
+
     def ClearTableBet(self, rid, bet):
         if rid in self.ridBets:
             if bet in self.ridBets[rid]:
                 self.ridBets[rid][bet] = 0
 
+
     def RemovePlayer(self, rid):
         if rid in self.ridBets:
             del self.ridBets[rid]
+
 
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
@@ -289,6 +309,7 @@ class CrapsTable:
                 "RID_COUNT" : str(len(ridList)),
                 "RIDS_LIST" : ridList,
                 }
+
 
     def JsonPlayerBets(self, rid):
         betNames = []
@@ -302,6 +323,7 @@ class CrapsTable:
                 "TOKEN"     : rid,
                 "BET_NAMES" : betNames,
                 "BET_VALUES": betValues}
+
 
     def MarkerInfo(self):
         return {"TYPE"      : "MARKER_INFO",
