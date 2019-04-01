@@ -121,7 +121,7 @@ class CrapsTable:
 
     def CheckDontCome(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
-            payout = {4:2, 5:3/2, 6:6/5, 8:6/5, 9:3/2, 10:2}
+            payout = {4:1/2, 5:2/3, 6:5/6, 8:5/6, 9:2/3, 10:1/2}
             self.LOSE(rid, 'dontcome' + str(totalDices))
             self.LOSE(rid, 'dontcome' + str(totalDices) + 'odds')
 
