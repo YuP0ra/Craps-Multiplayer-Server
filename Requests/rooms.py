@@ -58,7 +58,8 @@ def runRoom(roomPlayers, table):
                                 "WIN"   : str(table.roundResultsWIN),
                                 "PUSH"  : str(table.roundResultsPUSH),
                                 "LOSE"  : str(table.roundResultsLOSE),
-                                "MOVE"  : str(table.roundResultsMOVE)
+                                "MOVE"  : str(table.roundResultsMOVE),
+                                "TOTAL" : str(table.roundResultsTotalWins)
                              })
 
             player.send_data(table.MarkerInfo())

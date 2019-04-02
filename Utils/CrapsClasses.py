@@ -7,10 +7,14 @@ class CrapsTable:
         self.ridBets = {}
         self.isComeOutRoll = True
 
+        self.ridTotalWin = {}
+
         self.roundResultsWIN = []
         self.roundResultsMOVE = []
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
+        self.roundResultsTotalWins = []
+
 
     def Reset(self,):
             self.marker = 0
@@ -32,6 +36,8 @@ class CrapsTable:
         totalDices = dice1 + dice2
 
         for rid in self.ridBets:
+            self.ridTotalWin[rid] = 0
+
             self.CheckLay(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckBig6(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
             self.CheckBig8(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
@@ -45,6 +51,11 @@ class CrapsTable:
             if not tmpIsComeOutRoll:
                 self.CheckBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
                 self.CheckStatusHardway(rid, tmpIsComeOutRoll, tmpMarker, dice1, dice2)
+
+        for rid, total in self.ridTotalWin.items():
+            total = 0 if total < 0 else total
+            self.roundResultsTotalWins.append(rid)
+            self.roundResultsTotalWins.append(total)
 
 
     def BetValue(self, rid, betName):
@@ -242,10 +253,12 @@ class CrapsTable:
         self.roundResultsPUSH = []
         self.roundResultsLOSE = []
         self.roundResultsMOVE = []
+        self.roundResultsTotalWins = []
 
 
     def WIN(self, rid, line, factor=1):
         moneyOnLine = int(self.BetValue(rid, line) * (1 + factor))
+        self.ridTotalWin[rid] += moneyOnLine
         if moneyOnLine > 0:
             self.roundResultsWIN.append(rid)
             self.roundResultsWIN.append(line)
@@ -255,6 +268,7 @@ class CrapsTable:
 
     def PUSH(self, rid, line):
         moneyOnLine = self.BetValue(rid, line)
+        self.ridTotalWin[rid] += moneyOnLine
         if moneyOnLine > 0:
             self.roundResultsPUSH.append(rid)
             self.roundResultsPUSH.append(line)
@@ -264,6 +278,7 @@ class CrapsTable:
 
     def LOSE(self, rid, line):
         moneyOnLine = self.BetValue(rid, line)
+        self.ridTotalWin[rid] -= moneyOnLine
         if moneyOnLine > 0:
             self.roundResultsLOSE.append(rid)
             self.roundResultsLOSE.append(line)
@@ -358,4 +373,4 @@ class CrapsTable:
 #     t.UpdateTableBet('123', 'dontpasslineodds', 10)
 #
 #     t.Roll(d1, d2)
-#     print(d1+ d2, t.roundResultsWIN)
+#     print(d1+ d2, t.roundResultsTotalWins)
