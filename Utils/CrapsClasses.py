@@ -55,7 +55,7 @@ class CrapsTable:
         for rid, total in self.ridTotalWin.items():
             total = 0 if total < 0 else total
             self.roundResultsTotalWins.append(rid)
-            self.roundResultsTotalWins.append(total)
+            self.roundResultsTotalWins.append(str(total))
 
 
     def BetValue(self, rid, betName):
