@@ -1,5 +1,6 @@
 import copy
 import random
+from math import ceil
 
 class CrapsTable:
     def __init__(self,):
@@ -257,7 +258,7 @@ class CrapsTable:
 
 
     def WIN(self, rid, line, factor=1):
-        moneyOnLine = int(self.BetValue(rid, line) * (1 + factor))
+        moneyOnLine = int(ceil(self.BetValue(rid, line) * (1 + factor)))
         self.ridTotalWin[rid] += moneyOnLine
         if moneyOnLine > 0:
             self.roundResultsWIN.append(rid)
