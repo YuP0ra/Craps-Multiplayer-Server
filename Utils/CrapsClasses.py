@@ -112,18 +112,18 @@ class CrapsTable:
         if totalDices in [4, 5, 6, 8, 9, 10]:
             payout = {4:2, 5:3/2, 6:6/5, 8:6/5, 9:3/2, 10:2}
             self.WIN(rid, 'come' + str(totalDices), payout[totalDices])
-            if not firstRoll:
-                self.WIN(rid, 'come' + str(totalDices) + 'odds', payout[totalDices])
-            else:
+            if firstRoll:
                 self.PUSH(rid, 'come' + str(totalDices) + 'odds')
+            else:
+                self.WIN(rid, 'come' + str(totalDices) + 'odds', payout[totalDices])
 
         if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'come' + str(odd))
-                if not firstRoll:
-                    self.LOSE(rid, 'come' + str(odd) + 'odds')
-                else:
+                if firstRoll:
                     self.PUSH(rid, 'come' + str(odd) + 'odds')
+                else:
+                    self.LOSE(rid, 'come' + str(odd) + 'odds')
 
         if not firstRoll and self.BetValue(rid, 'come'):
             if totalDices in [7, 11]:
@@ -348,29 +348,29 @@ class CrapsTable:
 
 
 
-# t = CrapsTable()
-#
-# for i in range(100):
-#     d1, d2 = random.randint(1, 6), random.randint(1, 6)
-#     t.UpdateTableBet('123', 'buy4', 10)
-#     t.UpdateTableBet('123', 'buy8', 10)
-#     t.UpdateTableBet('123', 'buy9', 10)
-#     t.UpdateTableBet('123', 'lay6', 10)
-#     t.UpdateTableBet('123', 'lay4', 10)
-#     t.UpdateTableBet('123', 'lay10', 10)
-#     t.UpdateTableBet('123', 'big6', 10)
-#     t.UpdateTableBet('123', 'big8', 10)
-#     t.UpdateTableBet('123', 'come', 10)
-#     t.UpdateTableBet('123', 'field', 10)
-#     t.UpdateTableBet('123', 'prop2', 10)
-#     t.UpdateTableBet('123', 'prop3', 10)
-#     t.UpdateTableBet('123', 'prop7', 10)
-#     t.UpdateTableBet('123', 'prop11', 10)
-#     t.UpdateTableBet('123', 'dontcome', 10)
-#     t.UpdateTableBet('123', 'passline', 10)
-#     t.UpdateTableBet('123', 'dontpassline', 10)
-#     t.UpdateTableBet('123', 'passlineodds', 10)
-#     t.UpdateTableBet('123', 'dontpasslineodds', 10)
-#
-#     t.Roll(d1, d2)
-#     print(d1+ d2, t.roundResultsTotalWins)
+t = CrapsTable()
+
+for i in range(2):
+    d1, d2 = random.randint(1, 6), random.randint(1, 6)
+    t.UpdateTableBet('123', 'buy4', 10)
+    t.UpdateTableBet('123', 'buy8', 10)
+    t.UpdateTableBet('123', 'buy9', 10)
+    t.UpdateTableBet('123', 'lay6', 10)
+    t.UpdateTableBet('123', 'lay4', 10)
+    t.UpdateTableBet('123', 'lay10', 10)
+    t.UpdateTableBet('123', 'big6', 10)
+    t.UpdateTableBet('123', 'big8', 10)
+    t.UpdateTableBet('123', 'come', 10)
+    t.UpdateTableBet('123', 'field', 10)
+    t.UpdateTableBet('123', 'prop2', 10)
+    t.UpdateTableBet('123', 'prop3', 10)
+    t.UpdateTableBet('123', 'prop7', 10)
+    t.UpdateTableBet('123', 'prop11', 10)
+    t.UpdateTableBet('123', 'dontcome', 10)
+    t.UpdateTableBet('123', 'passline', 10)
+    t.UpdateTableBet('123', 'dontpassline', 10)
+    t.UpdateTableBet('123', 'passlineodds', 10)
+    t.UpdateTableBet('123', 'dontpasslineodds', 10)
+
+    t.Roll(d1, d2)
+    print(d1+ d2, t.roundResultsWIN)
