@@ -69,6 +69,15 @@ def runRoom(roomPlayers, table):
 
             player.send_data(table.MarkerInfo())
 
+        print({
+                            "WIN"   : str(table.roundResultsWIN),
+                            "PUSH"  : str(table.roundResultsPUSH),
+                            "LOSE"  : str(table.roundResultsLOSE),
+                            "MOVE"  : str(table.roundResultsMOVE),
+                            "TOTAL" : str(table.roundResultsTotalWins),
+                            "NEXT"  :str(table.roundNextBets)
+                         })
+                         
         CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
         ############ Animation Ends
 
@@ -161,25 +170,7 @@ def ROOM_PLAYERS_INFO(player, request):
 
 
 def ROOM_TABLE_INFO(player, request):
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)# you can write to stdout for debugging purposes, e.g.
-# print("this is a debug message")
-
-def solution(A, Y):
-    R = 0
-    for i in range(len(A)):
-        T = A[i]
-        for j in range(i + 1, len(A)):
-            if T == Y:
-                R = R + 1
-                break
-            elif T > Y:
-                break
-            else:
-                T = T + A[j]
-    return R
-
-
-
+    roomNmae = player.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
         player.send_data(crapsRoomsTable[roomNmae].JsonTableInfo())
 
@@ -192,16 +183,16 @@ def PLAYER_BETS(player, request):
 
 def CRAPS_BET(client, request):
     request['TOKEN'] = client.DATA['RID']
-    broadcastRequest(client, request)
-
     roomNmae = client.DATA.get('CURRENT_ROOM', None)
+
     if roomNmae in crapsRoomsTable:
         if crapsRoomsTable[roomNmae].updateTableBet(client.DATA['RID'], request):
-            return
-    client.send_data({"TYPE":   "BET_ERROR",
-                                "BETTING_ON" : request['BETTING_ON'],
-                                "AMOUNT"  : request['AMOUNT']
-                      })
+            broadcastRequest(client, request)
+        else:
+            client.send_data({"TYPE":   "BET_ERROR",
+                                        "BETTING_ON" : request['BETTING_ON'],
+                                        "AMOUNT"  : request['AMOUNT']
+                              })
 
 
 
