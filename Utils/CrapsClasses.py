@@ -5,11 +5,13 @@ from math import ceil
 class CrapsTable:
     def __init__(self,):
         self.marker = 0
+        self.roundID = 0
         self.ridBets = {}
         self.isComeOutRoll = True
 
         self.ridTotalWin = {}
 
+        self.roundNextBets = []
         self.roundResultsWIN = []
         self.roundResultsMOVE = []
         self.roundResultsPUSH = []
@@ -53,10 +55,8 @@ class CrapsTable:
                 self.CheckBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
                 self.CheckStatusHardway(rid, tmpIsComeOutRoll, tmpMarker, dice1, dice2)
 
-        for rid, total in self.ridTotalWin.items():
-            total = 0 if total < 0 else total
-            self.roundResultsTotalWins.append(rid)
-            self.roundResultsTotalWins.append(str(total))
+        self.updateTotalWins()
+        self.updateNextRoundBets()
 
 
     def BetValue(self, rid, betName):
@@ -298,6 +298,25 @@ class CrapsTable:
             self.ClearTableBet(rid, oldLine)
 
 
+    def updateNextRoundBets(self):
+        self.roundNextBets = []
+        for rid in self.ridBets:
+            for bet in self.ridBets[rid]:
+                val = self.ridBets[rid][bet]
+                if val > 0:
+                    self.roundNextBets.append(rid)
+                    self.roundNextBets.append(bet)
+                    self.roundNextBets.append(val)
+
+
+    def updateTotalWins(self):
+        for rid in self.ridBets:
+            for rid, total in self.ridTotalWin.items():
+                total = 0 if total < 0 else total
+                self.roundResultsTotalWins.append(rid)
+                self.roundResultsTotalWins.append(str(total))
+
+
     def UpdateTableBet(self, rid, bet, amount):
         if rid not in self.ridBets:
             self.ridBets[rid] = {}
@@ -350,28 +369,30 @@ class CrapsTable:
 
 
 # t = CrapsTable()
+# t.UpdateTableBet('.', 'come6', 6)
+# t.UpdateTableBet('.', 'come5', 6)
+# t.Roll(3, 3)
+# print(t.roundResultsWIN)
+# print(t.roundResultsLOSE)
+# print(t.roundResultsPUSH)
+# print(t.roundNextBets)
 #
-# for i in range(2):
-#     d1, d2 = random.randint(1, 6), random.randint(1, 6)
-#     t.UpdateTableBet('123', 'buy4', 10)
-#     t.UpdateTableBet('123', 'buy8', 10)
-#     t.UpdateTableBet('123', 'buy9', 10)
-#     t.UpdateTableBet('123', 'lay6', 10)
-#     t.UpdateTableBet('123', 'lay4', 10)
-#     t.UpdateTableBet('123', 'lay10', 10)
-#     t.UpdateTableBet('123', 'big6', 10)
-#     t.UpdateTableBet('123', 'big8', 10)
-#     t.UpdateTableBet('123', 'come', 10)
-#     t.UpdateTableBet('123', 'field', 10)
-#     t.UpdateTableBet('123', 'prop2', 10)
-#     t.UpdateTableBet('123', 'prop3', 10)
-#     t.UpdateTableBet('123', 'prop7', 10)
-#     t.UpdateTableBet('123', 'prop11', 10)
-#     t.UpdateTableBet('123', 'dontcome', 10)
-#     t.UpdateTableBet('123', 'passline', 10)
-#     t.UpdateTableBet('123', 'dontpassline', 10)
-#     t.UpdateTableBet('123', 'passlineodds', 10)
-#     t.UpdateTableBet('123', 'dontpasslineodds', 10)
+# t.Roll(3, 2)
+# print(t.roundResultsWIN)
+# print(t.roundResultsLOSE)
+# print(t.roundResultsPUSH)
+# print(t.roundNextBets)
 #
-#     t.Roll(d1, d2)
-#     print(d1+ d2, t.roundResultsWIN)
+#
+# t.UpdateTableBet('bot', 'passlineodds', 10)
+# t.UpdateTableBet('bot', 'come', 10)
+# t.Roll(4, 5)
+# print(t.roundResultsWIN)
+#
+# t.UpdateTableBet('bot', 'come9odds', 10)
+# t.Roll(4, 4)
+# print(t.roundResultsWIN)
+#
+# t.Roll(4, 5)
+# print(t.roundResultsWIN)
+# print(t.roundResultsPUSH)

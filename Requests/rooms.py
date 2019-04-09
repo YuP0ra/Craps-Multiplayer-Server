@@ -29,8 +29,12 @@ def runRoom(roomPlayers, table):
             time.sleep(3)
             continue
         else:
+            table.roundID += 1
             for player in roomPlayers:
-                player.send_data({"TYPE"  :"ROUND_STARTED"})
+                player.send_data({
+                                    "TYPE"      :"ROUND_STARTED",
+                                    "ROUND_ID"  :str(table.roundID)
+                                 })
         ############ Betiing Ends
 
         for i in range(ROUND_TIME):
@@ -59,7 +63,8 @@ def runRoom(roomPlayers, table):
                                 "PUSH"  : str(table.roundResultsPUSH),
                                 "LOSE"  : str(table.roundResultsLOSE),
                                 "MOVE"  : str(table.roundResultsMOVE),
-                                "TOTAL" : str(table.roundResultsTotalWins)
+                                "TOTAL" : str(table.roundResultsTotalWins),
+                                "NEXT"  :str(table.roundNextBets)
                              })
 
             player.send_data(table.MarkerInfo())
@@ -156,7 +161,25 @@ def ROOM_PLAYERS_INFO(player, request):
 
 
 def ROOM_TABLE_INFO(player, request):
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)
+    roomNmae = player.DATA.get('CURRENT_ROOM', None)# you can write to stdout for debugging purposes, e.g.
+# print("this is a debug message")
+
+def solution(A, Y):
+    R = 0
+    for i in range(len(A)):
+        T = A[i]
+        for j in range(i + 1, len(A)):
+            if T == Y:
+                R = R + 1
+                break
+            elif T > Y:
+                break
+            else:
+                T = T + A[j]
+    return R
+
+
+
     if roomNmae in crapsRoomsTable:
         player.send_data(crapsRoomsTable[roomNmae].JsonTableInfo())
 
