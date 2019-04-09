@@ -77,7 +77,7 @@ def runRoom(roomPlayers, table):
                             "TOTAL" : str(table.roundResultsTotalWins),
                             "NEXT"  :str(table.roundNextBets)
                          })
-                         
+
         CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
         ############ Animation Ends
 
