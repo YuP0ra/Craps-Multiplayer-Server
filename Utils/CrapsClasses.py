@@ -317,12 +317,15 @@ class CrapsTable:
                 self.roundResultsTotalWins.append(str(total))
 
 
-    def UpdateTableBet(self, rid, bet, amount):
-        if rid not in self.ridBets:
-            self.ridBets[rid] = {}
-        if bet not in self.ridBets[rid]:
-            self.ridBets[rid][bet] = 0
-        self.ridBets[rid][bet] += amount
+    def UpdateTableBet(self, roundID, rid, bet, amount):
+        if roundID == self.roundID:
+            if rid not in self.ridBets:
+                self.ridBets[rid] = {}
+            if bet not in self.ridBets[rid]:
+                self.ridBets[rid][bet] = 0
+            self.ridBets[rid][bet] += amount
+            return True
+        return False
 
 
     def ClearTableBet(self, rid, bet):
@@ -368,14 +371,14 @@ class CrapsTable:
 
 
 
-# t = CrapsTable()
-# t.UpdateTableBet('.', 'come6', 6)
-# t.UpdateTableBet('.', 'come5', 6)
-# t.Roll(3, 3)
-# print(t.roundResultsWIN)
-# print(t.roundResultsLOSE)
-# print(t.roundResultsPUSH)
-# print(t.roundNextBets)
+t = CrapsTable()
+t.UpdateTableBet(0, '.', 'come6', 6)
+t.UpdateTableBet(0, '.', 'come5', 6)
+t.Roll(3, 3)
+print(t.roundResultsWIN)
+print(t.roundResultsLOSE)
+print(t.roundResultsPUSH)
+print(t.roundNextBets)
 #
 # t.Roll(3, 2)
 # print(t.roundResultsWIN)

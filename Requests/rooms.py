@@ -196,7 +196,15 @@ def CRAPS_BET(client, request):
 
     roomNmae = client.DATA.get('CURRENT_ROOM', None)
     if roomNmae in crapsRoomsTable:
-        crapsRoomsTable[roomNmae].UpdateTableBet(client.DATA['RID'], request['BETTING_ON'], int(request['AMOUNT']))
+        success = crapsRoomsTable[roomNmae].UpdateTableBet( client.DATA['ROUND_ID'],
+                                                            client.DATA['RID'],
+                                                            request['BETTING_ON'],
+                                                            int(request['AMOUNT']))
+        if not success:
+            client.send_data({"TYPE":   "BET_ERROR",
+                                        "BETTING_ON" : request['BETTING_ON'],
+                                        "AMOUNT"  : request['AMOUNT']
+                              })
 
 
 
