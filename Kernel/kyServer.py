@@ -78,8 +78,11 @@ class GameServer(Thread):
 
 
 class RemoteClient():
+    clientID = 0
     def __init__(self, socket, address, kernel):
         self._stack = []
+        RemoteClient.clientID += 1
+        self.clientID = RemoteClient.clientID
         self._sendThrd = Thread(target=self.rceving_thread)
         self._rcevThrd = Thread(target=self.sending_thread)
 

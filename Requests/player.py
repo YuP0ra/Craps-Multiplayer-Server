@@ -3,7 +3,10 @@ from Kernel.database import get, set
 
 
 def onConnectionStarted(client):
-    client.send_data({"TYPE": "CONNECTED"})
+    client.send_data({
+                        "TYPE"      : "CONNECTED",
+                        "SERVER_ID" : str(client.clientID)
+                     })
 
     client.DATA['CURRENT_ROOM'] = None
     client.DATA['INFO'] = ["Guest", 1, 50000]

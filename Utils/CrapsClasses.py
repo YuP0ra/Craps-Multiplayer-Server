@@ -291,7 +291,7 @@ class CrapsTable:
         moneyOnOldLine = self.BetValue(rid, oldLine)
         moneyOnNewLine = self.BetValue(rid, newLine)
         if moneyOnOldLine > 0:
-            self.UpdateTableBet(rid, newLine, moneyOnOldLine + moneyOnNewLine)
+            self.appendTableBet(rid, newLine, moneyOnOldLine + moneyOnNewLine)
             self.roundResultsMOVE.append(rid)
             self.roundResultsMOVE.append(oldLine)
             self.roundResultsMOVE.append(newLine)
@@ -317,14 +317,19 @@ class CrapsTable:
                 self.roundResultsTotalWins.append(str(total))
 
 
-    def UpdateTableBet(self, roundID, rid, bet, amount):
-        if roundID == self.roundID:
-            if rid not in self.ridBets:
-                self.ridBets[rid] = {}
-            if bet not in self.ridBets[rid]:
-                self.ridBets[rid][bet] = 0
-            self.ridBets[rid][bet] += amount
-            return True
+    def appendTableBet(self, rid, bet, amount):
+        if rid not in self.ridBets:
+            self.ridBets[rid] = {}
+        if bet not in self.ridBets[rid]:
+            self.ridBets[rid][bet] = 0
+        self.ridBets[rid][bet] += amount
+
+
+    def updateTableBet(self, rid, request):
+        if 'ROUND_ID' in request:
+            if request['ROUND_ID'] == self.roundID:
+                updateTableBet(self, rid, request['BETTING_ON'], int(request['AMOUNT']))
+                return True
         return False
 
 
@@ -371,14 +376,14 @@ class CrapsTable:
 
 
 
-t = CrapsTable()
-t.UpdateTableBet(0, '.', 'come6', 6)
-t.UpdateTableBet(0, '.', 'come5', 6)
-t.Roll(3, 3)
-print(t.roundResultsWIN)
-print(t.roundResultsLOSE)
-print(t.roundResultsPUSH)
-print(t.roundNextBets)
+# t = CrapsTable()
+# t.appendTableBet('.', 'come6', 6)
+# t.appendTableBet('.', 'come5', 6)
+# t.Roll(3, 3)
+# print(t.roundResultsWIN)
+# print(t.roundResultsLOSE)
+# print(t.roundResultsPUSH)
+# print(t.roundNextBets)
 #
 # t.Roll(3, 2)
 # print(t.roundResultsWIN)
@@ -387,12 +392,12 @@ print(t.roundNextBets)
 # print(t.roundNextBets)
 #
 #
-# t.UpdateTableBet('bot', 'passlineodds', 10)
-# t.UpdateTableBet('bot', 'come', 10)
+# t.appendTableBet('bot', 'passlineodds', 10)
+# t.appendTableBet('bot', 'come', 10)
 # t.Roll(4, 5)
 # print(t.roundResultsWIN)
 #
-# t.UpdateTableBet('bot', 'come9odds', 10)
+# t.appendTableBet('bot', 'come9odds', 10)
 # t.Roll(4, 4)
 # print(t.roundResultsWIN)
 #
