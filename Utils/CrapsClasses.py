@@ -55,7 +55,11 @@ class CrapsTable:
                 self.CheckBuy(rid, tmpIsComeOutRoll, tmpMarker, totalDices)
                 self.CheckStatusHardway(rid, tmpIsComeOutRoll, tmpMarker, dice1, dice2)
 
-        self.updateTotalWins()
+        for rid, total in self.ridTotalWin.items():
+            total = 0 if total < 0 else total
+            self.roundResultsTotalWins.append(rid)
+            self.roundResultsTotalWins.append(str(total))
+
         self.updateNextRoundBets()
 
 
@@ -309,14 +313,6 @@ class CrapsTable:
                     self.roundNextBets.append(val)
 
 
-    def updateTotalWins(self):
-        for rid in self.ridBets:
-            for rid, total in self.ridTotalWin.items():
-                total = 0 if total < 0 else total
-                self.roundResultsTotalWins.append(rid)
-                self.roundResultsTotalWins.append(str(total))
-
-
     def appendTableBet(self, rid, bet, amount):
         if rid not in self.ridBets:
             self.ridBets[rid] = {}
@@ -324,11 +320,9 @@ class CrapsTable:
             self.ridBets[rid][bet] = 0
         self.ridBets[rid][bet] += amount
 
-
     def updateTableBet(self, rid, request):
         if 'ROUND_ID' in request:
-            print('from craps class', request, self.roundID)
-            if request['ROUND_ID'] == self.roundID:
+            if request['ROUND_ID'] == str(self.roundID):
                 self.appendTableBet(self, rid, request['BETTING_ON'], int(request['AMOUNT']))
                 return True
         return False

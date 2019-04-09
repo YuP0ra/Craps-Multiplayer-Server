@@ -69,15 +69,6 @@ def runRoom(roomPlayers, table):
 
             player.send_data(table.MarkerInfo())
 
-        print({
-                            "WIN"   : str(table.roundResultsWIN),
-                            "PUSH"  : str(table.roundResultsPUSH),
-                            "LOSE"  : str(table.roundResultsLOSE),
-                            "MOVE"  : str(table.roundResultsMOVE),
-                            "TOTAL" : str(table.roundResultsTotalWins),
-                            "NEXT"  :str(table.roundNextBets)
-                         })
-
         CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
         ############ Animation Ends
 
