@@ -328,7 +328,7 @@ class CrapsTable:
     def updateTableBet(self, rid, request):
         if 'ROUND_ID' in request:
             if request['ROUND_ID'] == self.roundID:
-                updateTableBet(self, rid, request['BETTING_ON'], int(request['AMOUNT']))
+                self.appendTableBet(self, rid, request['BETTING_ON'], int(request['AMOUNT']))
                 return True
         return False
 
