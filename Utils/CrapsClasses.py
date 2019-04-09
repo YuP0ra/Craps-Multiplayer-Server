@@ -371,7 +371,8 @@ class CrapsTable:
     def MarkerInfo(self):
         return {"TYPE"      : "MARKER_INFO",
                 "COMEROLL"  : str(self.isComeOutRoll),
-                "MARKER"    : str(self.marker)}
+                "MARKER"    : str(self.marker)
+               }
 
 
 
