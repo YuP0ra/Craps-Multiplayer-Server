@@ -43,7 +43,7 @@ def runRoom(roomPlayers, table):
                                     "TYPE"  :"CLOCK_UPDATE",
                                     "CLOCK" :str(ROUND_TIME - i - 1)
                                  })
-                initTime = sleepExatcly(initTime, 1)
+            initTime = sleepExatcly(initTime, 1)
 
         ############ Animation Starts
         if len(roomPlayers) == 0:
@@ -70,6 +70,7 @@ def runRoom(roomPlayers, table):
 
             player.send_data(table.MarkerInfo())
 
+        print(table.roundResultsPUSH)
         CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
         ############ Animation Ends
 
