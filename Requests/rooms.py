@@ -3,28 +3,35 @@ import random
 import secrets
 from threading import Thread
 from Kernel.database import get, set
-from Utils.CrapsClasses import CrapsTable
+from Utils.CrapsClasses import CrapsTable, CrapsBot
 
 ################################################################################
-tokensDB, crapsRooms, crapsRoomsTable = {}, {}, {}
+tokensDB, crapsRooms, crapsRoomsTable, roomAllowedBets = {}, {}, {}, {}
 
 
 ################################################################################
 def init():
-    for roomName in get('roomsInfo')['rooms_name']:
+    for i, roomName in enumerate(get('roomsInfo')['rooms_name']):
         crapsRooms[roomName] = []
-        crapsRoomsTable[roomName] = CrapsTable()
+        crapsRoomsTable[roomName] = CrapsTable(get('roomsInfo')['rooms_bet_arr'][i])
+        roomAllowedBets[roomName] = get('roomsInfo')['rooms_bet_arr'][i]
         Thread(target=runRoom,
-               args=(crapsRooms[roomName], crapsRoomsTable[roomName],)).start()
+               args=(roomName, crapsRooms[roomName], crapsRoomsTable[roomName])
+               ).start()
 
 
-def runRoom(roomPlayers, table):
+def runRoom(roomName, roomPlayers, table):
     ROUND_TIME, CALCULATIONS_TIME = 15, 10
+
+    bot = CrapsBot(table.validChips)
+    bot.joinRoom(roomName, JOIN_ROOM_REQUEST)
 
     while True:
         initTime = time.time()
         ############ Betiing Starts
-        if len(roomPlayers) == 0:
+        if len(roomPlayers) == 1:
+            table.ClearTableBets()
+            bot.fireupNewBot()
             table.Reset()
             time.sleep(3)
             continue
@@ -38,6 +45,7 @@ def runRoom(roomPlayers, table):
         ############ Betiing Ends
 
         for i in range(ROUND_TIME):
+            bot.placeBet(table.isComeOutRoll, CRAPS_BET)
             for player in roomPlayers:
                 player.send_data({
                                     "TYPE"  :"CLOCK_UPDATE",
@@ -60,17 +68,16 @@ def runRoom(roomPlayers, table):
 
             player.send_data({
                                 "TYPE"  : "ROUND_RESULT",
+                                "TOTAL" : str(table.roundResultsTotalWins),
                                 "WIN"   : str(table.roundResultsWIN),
                                 "PUSH"  : str(table.roundResultsPUSH),
                                 "LOSE"  : str(table.roundResultsLOSE),
                                 "MOVE"  : str(table.roundResultsMOVE),
-                                "TOTAL" : str(table.roundResultsTotalWins),
-                                "NEXT"  :str(table.roundNextBets)
+                                "NEXT"  : str(table.roundNextBets),
+                                "ROLL"  : str(table.isComeOutRoll),
+                                "MARKER": str(table.marker)
                              })
 
-            player.send_data(table.MarkerInfo())
-
-        print(table.roundResultsPUSH)
         CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
         ############ Animation Ends
 
@@ -115,7 +122,13 @@ def JOIN_ROOM_REQUEST(player, request):
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
             get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
-            player.send_data({"TYPE":"ROOM_JOIN_SUCCESS", "TOKEN": player.DATA['RID'], "ROOM_NAME": request['ROOM_NAME']})
+
+            player.send_data({  "TYPE":"ROOM_JOIN_SUCCESS",
+                                "TOKEN"     : player.DATA['RID'],
+                                "ROOM_NAME" : request['ROOM_NAME'],
+                                "CHIPS_ARR" : roomAllowedBets[request['ROOM_NAME']]
+                              })
+
             player.send_data(crapsRoomsTable[request['ROOM_NAME']].MarkerInfo())
             tokensDB[player.TOKEN] = request['ROOM_NAME']
 
@@ -146,40 +159,43 @@ def LEAVE_ROOM_REQUEST(player, request):
 
 
 def ROOM_PLAYERS_INFO(player, request):
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)
-    if roomNmae in crapsRooms:
-        players = [x for x in crapsRooms[roomNmae] if x != player]
+    roomName = player.DATA.get('CURRENT_ROOM', None)
+    if roomName in crapsRooms:
+        players = [x for x in crapsRooms[roomName] if x != player]
 
-        tokens  = [p.DATA['RID'] for p in players]
-        names   = [str(p.DATA['INFO'][0]) for p in players]
-        levels  = [str(p.DATA['INFO'][1]) for p in players]
-        moneies = [str(p.DATA['INFO'][2]) for p in players]
+        tokens  = [str(player.DATA['RID'])]     + [str(p.DATA['RID']) for p in players]
+        names   = [str(player.DATA['INFO'][0])] + [str(p.DATA['INFO'][0]) for p in players]
+        levels  = [str(player.DATA['INFO'][1])] + [str(p.DATA['INFO'][1]) for p in players]
+        moneies = [str(player.DATA['INFO'][2])] + [str(p.DATA['INFO'][2]) for p in players]
+
 
         player.send_data({"TYPE":   "ROOM_PLAYERS_INFO",
-                                    "TOKEN" : tokens,
-                                    "NAME"  : names,
-                                    "LEVEL" : levels,
-                                    "MONEY" : moneies })
+                                    "TOKEN" : str(tokens),
+                                    "NAME"  : str(names),
+                                    "LEVEL" : str(levels),
+                                    "MONEY" : str(moneies),
+                                    "BETS"  : str(crapsRoomsTable[roomName].TableBetsList())
+                        })
 
 
 def ROOM_TABLE_INFO(player, request):
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)
-    if roomNmae in crapsRoomsTable:
-        player.send_data(crapsRoomsTable[roomNmae].JsonTableInfo())
+    roomName = player.DATA.get('CURRENT_ROOM', None)
+    if roomName in crapsRoomsTable:
+        player.send_data(crapsRoomsTable[roomName].JsonTableInfo())
 
 
 def PLAYER_BETS(player, request):
-    roomNmae = player.DATA.get('CURRENT_ROOM', None)
-    if roomNmae in crapsRoomsTable:
-        player.send_data(crapsRoomsTable[roomNmae].JsonPlayerBets(request["TARGET_TOKEN"]))
+    roomName = player.DATA.get('CURRENT_ROOM', None)
+    if roomName in crapsRoomsTable:
+        player.send_data(crapsRoomsTable[roomName].JsonPlayerBets(request["TARGET_TOKEN"]))
 
 
 def CRAPS_BET(client, request):
     request['TOKEN'] = client.DATA['RID']
-    roomNmae = client.DATA.get('CURRENT_ROOM', None)
+    roomName = client.DATA.get('CURRENT_ROOM', None)
 
-    if roomNmae in crapsRoomsTable:
-        if crapsRoomsTable[roomNmae].updateTableBet(client.DATA['RID'], request):
+    if roomName in crapsRoomsTable:
+        if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
             broadcastRequest(client, request)
         else:
             client.send_data({"TYPE":   "BET_ERROR",

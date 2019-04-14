@@ -1,13 +1,75 @@
 import copy
 import random
-from math import ceil
+import secrets
+
+
+class CrapsBot():
+    def __init__(self, allowedBets):
+        self.TOKEN      = str(secrets.token_hex(16))
+        self.DATA       = {}
+
+        self._money     = {}
+        self._roundID   = {}
+        self.validChips = allowedBets
+
+    def __eq__(self, other):
+        return self.TOKEN == other.TOKEN
+
+    def __hash__(self):
+        return hash(self.TOKEN)
+
+    def joinRoom(self, roomName, func):
+        self.DATA['CURRENT_ROOM'] = None
+        self.DATA['INFO'] = ['bot', 10, 500000]
+        request = { 'TYPE'      :'JOIN_ROOM_REQUEST',
+                    'ROOM_NAME' :roomName
+                   }
+        func(self, request)
+
+    def fireupNewBot(self):
+        index = random.randint(0, 4)
+        names = ['bot1', 'bot2', 'bot3', 'bot4', 'bot4']
+        leves = [1, 9, 12, 4, 7]
+        money = [500000, 600000, 100000, 1000000, 700000]
+
+        self._money = int(money[index])
+        self.DATA['INFO'] = [names[index], leves[index], money[index]]
+
+    def placeBet(self, firstRoll, func):
+        if firstRoll:
+            validBets = ['passline', 'passline', 'dontpassline',
+                         'big6', 'big8',
+                         'lay4', 'lay5', 'lay6', 'lay8', 'lay9', 'lay10',
+                         'field']
+        else:
+            validBets = ['come', 'dontcome',
+                         'big6', 'big8',
+                         'buy4', 'buy5', 'buy6', 'buy8', 'buy9', 'buy10',
+                         'field']
+
+        request = { 'TYPE'      :'CRAPS_BET',
+                    'TOKEN'     :self.TOKEN,
+                    'ROUND_ID'  :self._roundID,
+                    'BETTING_ON':str(random.choice(validBets)),
+                    'AMOUNT'    :str(random.choice(self.validChips))
+                   }
+        func(self, request)
+
+
+    def send_data(self, request):
+        if 'TYPE' in request:
+            if request['TYPE'] == 'ROUND_STARTED':
+                self._roundID = request['ROUND_ID']
+
+
 
 class CrapsTable:
-    def __init__(self,):
+    def __init__(self, allowedBets):
         self.marker = 0
         self.roundID = 0
         self.ridBets = {}
         self.isComeOutRoll = True
+        self.validChips = allowedBets
 
         self.ridTotalWin = {}
 
@@ -262,6 +324,10 @@ class CrapsTable:
 
 
     def WIN(self, rid, line, factor=1):
+        def ceil(a):
+            if a > int(a) + 0.3:
+                return int(a + 1)
+            return int(a)
         moneyOnLine = int(ceil(self.BetValue(rid, line) * (1 + factor)))
         self.ridTotalWin[rid] += moneyOnLine
         if moneyOnLine > 0:
@@ -320,6 +386,7 @@ class CrapsTable:
             self.ridBets[rid][bet] = 0
         self.ridBets[rid][bet] += amount
 
+
     def updateTableBet(self, rid, request):
         if 'ROUND_ID' in request:
             if request['ROUND_ID'] == str(self.roundID):
@@ -334,10 +401,27 @@ class CrapsTable:
                 self.ridBets[rid][bet] = 0
 
 
+    def ClearTableBets(self,):
+        for rid in self.ridBets:
+            for bet in self.ridBets[rid]:
+                self.ridBets[rid][bet] = 0
+
+
     def RemovePlayer(self, rid):
         if rid in self.ridBets:
             del self.ridBets[rid]
 
+
+    def TableBetsList(self):
+        allValidBets = []
+        for rid in self.ridBets:
+            for bet in self.ridBets[rid]:
+                val = self.ridBets[rid][bet]
+                if val > 0:
+                    allValidBets.append(str(rid))
+                    allValidBets.append(str(bet))
+                    allValidBets.append(str(val))
+        return allValidBets
 
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
