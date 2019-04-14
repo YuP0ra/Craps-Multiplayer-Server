@@ -45,7 +45,7 @@ def runRoom(roomName, roomPlayers, table):
         ############ Betiing Ends
 
         for i in range(ROUND_TIME):
-            if i > 3:
+            if i < ROUND_TIME - 3 and i > 3:
                 bot.placeBet(table.isComeOutRoll, CRAPS_BET)
             for player in roomPlayers:
                 player.send_data({
