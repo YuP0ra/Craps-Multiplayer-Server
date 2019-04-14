@@ -51,7 +51,7 @@ class CrapsBot():
                     'TOKEN'     :self.TOKEN,
                     'ROUND_ID'  :self._roundID,
                     'BETTING_ON':str(random.choice(validBets)),
-                    'AMOUNT'    :str(random.choice(self.validChips))
+                    'AMOUNT'    :str(random.choice(self.validChips[:-1]))
                    }
         func(self, request)
 
