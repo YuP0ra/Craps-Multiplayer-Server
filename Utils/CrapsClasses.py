@@ -181,16 +181,20 @@ class CrapsTable:
             self.WIN(rid, 'come' + str(totalDices), payout[totalDices])
             if firstRoll:
                 self.PUSH(rid, 'come' + str(totalDices) + 'odds')
+                self.PUSH(rid, 'comeodds' + str(totalDices))
             else:
                 self.WIN(rid, 'come' + str(totalDices) + 'odds', payout[totalDices])
+                self.WIN(rid, 'comeodds' + str(totalDices), payout[totalDices])
 
         if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'come' + str(odd))
                 if firstRoll:
                     self.PUSH(rid, 'come' + str(odd) + 'odds')
+                    self.PUSH(rid, 'comeodds' + str(odd))
                 else:
                     self.LOSE(rid, 'come' + str(odd) + 'odds')
+                    self.LOSE(rid, 'comeodds' + str(odd))
 
         if not firstRoll and self.BetValue(rid, 'come'):
             if totalDices in [7, 11]:
@@ -205,11 +209,13 @@ class CrapsTable:
         if totalDices in [4, 5, 6, 8, 9, 10]:
             payout = {4:1/2, 5:2/3, 6:5/6, 8:5/6, 9:2/3, 10:1/2}
             self.LOSE(rid, 'dontcome' + str(totalDices))
+            self.LOSE(rid, 'dontcomeodds' + str(totalDices))
             self.LOSE(rid, 'dontcome' + str(totalDices) + 'odds')
 
         if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.WIN(rid, 'dontcome' + str(odd))
+                self.WIN(rid, 'dontcomeodds' + str(odd))
                 self.WIN(rid, 'dontcome' + str(odd) + 'odds')
 
         if not firstRoll and self.BetValue(rid, 'dontcome'):
