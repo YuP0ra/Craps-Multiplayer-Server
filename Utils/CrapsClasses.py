@@ -432,10 +432,11 @@ class CrapsTable:
     def JsonTableInfo(self):
         ridList = [str(rid) for rid in self.ridBets]
         return {"TYPE"      : "TABLE_INFO",
+                "RIDS_LIST" : str(ridList),
                 "MARKER"    : str(self.marker),
-                "COMEROLL"  : str(self.isComeOutRoll),
                 "RID_COUNT" : str(len(ridList)),
-                "RIDS_LIST" : ridList,
+                "ROUND_ID"  : str(self.roundID),
+                "COMEROLL"  : str(self.isComeOutRoll),
                 }
 
 

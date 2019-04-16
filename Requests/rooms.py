@@ -130,7 +130,8 @@ def JOIN_ROOM_REQUEST(player, request):
             player.send_data({  "TYPE":"ROOM_JOIN_SUCCESS",
                                 "TOKEN"     : player.DATA['RID'],
                                 "ROOM_NAME" : request['ROOM_NAME'],
-                                "CHIPS_ARR" : str(roomAllowedBets[request['ROOM_NAME']])
+                                "CHIPS_ARR" : str(roomAllowedBets[request['ROOM_NAME']]),
+                                "ROUND_ID"  : str(crapsRoomsTable[request['ROOM_NAME']].roundID)
                               })
 
             player.send_data(crapsRoomsTable[request['ROOM_NAME']].MarkerInfo())
@@ -178,6 +179,7 @@ def ROOM_PLAYERS_INFO(player, request):
                                     "LEVEL"     : str(levels),
                                     "MONEY"     : str(moneies),
                                     "MARKER"    : str(crapsRoomsTable[roomName].marker),
+                                    "ROUND_ID"  : str(crapsRoomsTable[roomName].roundID),
                                     "COMEROLL"  : str(crapsRoomsTable[roomName].isComeOutRoll),
                                     "BETS"      : str(crapsRoomsTable[roomName].TableBetsList())
                         })
