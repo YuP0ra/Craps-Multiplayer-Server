@@ -48,8 +48,9 @@ def runRoom(roomName, roomPlayers, table):
         ############ Betiing Ends
 
         for i in range(ROUND_TIME):
-            if i < ROUND_TIME - 3 and i > 3:
+            if i in [4, 8]:
                 bot.placeBet(table.isComeOutRoll, CRAPS_BET)
+
             for player in roomPlayers:
                 player.send_data({
                                     "TYPE"  :"CLOCK_UPDATE",
@@ -82,7 +83,7 @@ def runRoom(roomName, roomPlayers, table):
                                 "MARKER"    : str(table.marker)
                              })
 
-        CALCULATIONS_TIME = 3 + len(table.roundResultsWIN) *.24 + len(table.roundResultsLOSE) * .24
+        CALCULATIONS_TIME = 7
         ############ Animation Ends
 
         initTime = sleepExatcly(initTime, CALCULATIONS_TIME)

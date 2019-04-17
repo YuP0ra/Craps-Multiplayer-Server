@@ -8,6 +8,7 @@ class CrapsBot():
         self.TOKEN      = str(secrets.token_hex(16))
         self.DATA       = {}
 
+        self._stck      = []
         self._money     = {}
         self._roundID   = {}
         self.validChips = allowedBets
@@ -47,12 +48,20 @@ class CrapsBot():
                          'buy4', 'buy5', 'buy6', 'buy8', 'buy9', 'buy10',
                          'field']
 
+        validBets = [x for x in validBets if x not in self._stck]
+        val = random.choice(self.validChips[:-2])
+        bet = random.choice(validBets)
+        self._stck.append(bet)
+
         request = { 'TYPE'      :'CRAPS_BET',
                     'TOKEN'     :self.TOKEN,
                     'ROUND_ID'  :self._roundID,
-                    'BETTING_ON':str(random.choice(validBets)),
-                    'AMOUNT'    :str(random.choice(self.validChips[:-1]))
+                    'BETTING_ON':str(bet),
+                    'AMOUNT'    :str(val)
                    }
+
+        self._money -= bet
+        
         func(self, request)
 
 
@@ -60,7 +69,7 @@ class CrapsBot():
         if 'TYPE' in request:
             if request['TYPE'] == 'ROUND_STARTED':
                 self._roundID = request['ROUND_ID']
-
+                self._stck = []
 
 
 class CrapsTable:
@@ -463,14 +472,16 @@ class CrapsTable:
 
 
 
-# t = CrapsTable()
-# t.appendTableBet('.', 'come6', 6)
-# t.appendTableBet('.', 'come5', 6)
-# t.Roll(3, 3)
-# print(t.roundResultsWIN)
-# print(t.roundResultsLOSE)
-# print(t.roundResultsPUSH)
-# print(t.roundNextBets)
+t = CrapsTable([1, 10, 100, 100])
+t.appendTableBet('.', 'hard4', 6)
+t.appendTableBet('.', 'hard6', 6)
+t.appendTableBet('.', 'hard8', 6)
+t.appendTableBet('.', 'hard10', 6)
+t.Roll(4, 3)
+print(t.roundResultsWIN)
+print(t.roundResultsLOSE)
+print(t.roundResultsPUSH)
+print(t.roundNextBets)
 #
 # t.Roll(3, 2)
 # print(t.roundResultsWIN)
