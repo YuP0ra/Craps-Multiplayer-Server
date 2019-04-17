@@ -61,7 +61,7 @@ class CrapsBot():
                    }
 
         self._money -= bet
-        
+
         func(self, request)
 
 
@@ -472,16 +472,16 @@ class CrapsTable:
 
 
 
-t = CrapsTable([1, 10, 100, 100])
-t.appendTableBet('.', 'hard4', 6)
-t.appendTableBet('.', 'hard6', 6)
-t.appendTableBet('.', 'hard8', 6)
-t.appendTableBet('.', 'hard10', 6)
-t.Roll(4, 3)
-print(t.roundResultsWIN)
-print(t.roundResultsLOSE)
-print(t.roundResultsPUSH)
-print(t.roundNextBets)
+# t = CrapsTable([1, 10, 100, 100])
+# t.appendTableBet('.', 'hard4', 6)
+# t.appendTableBet('.', 'hard6', 6)
+# t.appendTableBet('.', 'hard8', 6)
+# t.appendTableBet('.', 'hard10', 6)
+# t.Roll(4, 3)
+# print(t.roundResultsWIN)
+# print(t.roundResultsLOSE)
+# print(t.roundResultsPUSH)
+# print(t.roundNextBets)
 #
 # t.Roll(3, 2)
 # print(t.roundResultsWIN)
