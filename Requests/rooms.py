@@ -42,9 +42,9 @@ def runRoom(roomName, roomPlayers, table):
             table.roundID += 1
             sync_arr = []
             for player in roomPlayers:
-                sync_arr.append(client.DATA['RID'])
-                sync_arr.append(client.DATA['INFO'][1])
-                sync_arr.append(client.DATA['INFO'][2])
+                sync_arr.append(player.DATA['RID'])
+                sync_arr.append(player.DATA['INFO'][1])
+                sync_arr.append(player.DATA['INFO'][2])
 
             for player in roomPlayers:
                 player.send_data({
