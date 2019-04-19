@@ -33,7 +33,7 @@ class CrapsBot():
         leves = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         money = [1000000, 2000000, 300000, 400000, 500000, 6000000, 7000000, 8000000, 9000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,]
 
-        self._money = int(names[index])
+        self._money = int(money[index])
         self.DATA['INFO'] = [names[index], leves[index], money[index]]
 
     def placeBet(self, firstRoll, func):
