@@ -40,9 +40,16 @@ def runRoom(roomName, roomPlayers, table):
             continue
         else:
             table.roundID += 1
+            sync_arr = []
+            for player in roomPlayers:
+                sync_arr.append(client.DATA['RID'])
+                sync_arr.append(client.DATA['INFO'][1])
+                sync_arr.append(client.DATA['INFO'][2])
+
             for player in roomPlayers:
                 player.send_data({
                                     "TYPE"      :"ROUND_STARTED",
+                                    "SYNC_ARR"  :str(sync_arr),
                                     "ROUND_ID"  :str(table.roundID)
                                  })
         ############ Betiing Ends

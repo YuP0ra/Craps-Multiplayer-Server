@@ -29,11 +29,11 @@ class CrapsBot():
 
     def fireupNewBot(self):
         index = random.randint(0, 4)
-        names = ['bot1', 'bot2', 'bot3', 'bot4', 'bot4']
-        leves = [1, 9, 12, 4, 7]
-        money = [500000, 600000, 100000, 1000000, 700000]
+        names = ['b@t1', 'b@t2', 'b@t3', 'b@t4', 'b@t4', 'b@t5', 'b@t6', 'b@t7', 'b@t8', 'b@t9', 'b@t10', 'b@t11', 'b@t12', 'b@t13', 'b@t14', 'b@t15']
+        leves = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        money = [1000000, 2000000, 300000, 400000, 500000, 6000000, 7000000, 8000000, 9000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,]
 
-        self._money = int(money[index])
+        self._money = int(names[index])
         self.DATA['INFO'] = [names[index], leves[index], money[index]]
 
     def placeBet(self, firstRoll, func):
