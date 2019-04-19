@@ -28,3 +28,9 @@ def SET_TOKEN(client, request):
 
 def PLAYER_INFO(client, request):
     client.DATA['INFO'] = [request.get('NAME', 'Guest'), request.get('LEVEL', 1), request.get('MONEY', 50000)]
+
+
+def SET_MONEY_LEVEL(client, request):
+    client.DATA['INFO'] = [client.DATA['INFO'][0], 1, 1]
+    client.DATA['INFO'][1] = request.get('LEVEL', 1)
+    client.DATA['INFO'][2] = request.get('MONEY', 50000)
