@@ -76,6 +76,7 @@ class CrapsTable:
         self.marker = 0
         self.roundID = 0
         self.ridBets = {}
+        self.canPlay = True
         self.isComeOutRoll = True
         self.validChips = allowedBets
 
