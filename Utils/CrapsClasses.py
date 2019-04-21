@@ -390,7 +390,7 @@ class CrapsTable:
                 if val > 0:
                     self.roundNextBets.append(rid)
                     self.roundNextBets.append(bet)
-                    self.roundNextBets.append(val)
+                    self.roundNextBets.append(str(val))
 
 
     def appendTableBet(self, rid, bet, amount):
