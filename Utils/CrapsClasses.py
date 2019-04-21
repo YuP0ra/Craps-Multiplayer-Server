@@ -10,7 +10,7 @@ class CrapsBot():
 
         self._stck      = []
         self._money     = {}
-        self._roundID   = {}
+        self._roundID   = "0"
         self.validChips = allowedBets
 
     def __eq__(self, other):
@@ -399,7 +399,6 @@ class CrapsTable:
         if bet not in self.ridBets[rid]:
             self.ridBets[rid][bet] = 0
         self.ridBets[rid][bet] += amount
-        print(bet, self.ridBets[rid][bet])
 
 
     def updateTableBet(self, rid, request):

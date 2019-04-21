@@ -38,15 +38,15 @@ def runRoom(roomName, roomPlayers, table):
             table.Reset()
             time.sleep(3)
             continue
+        else:
+            table.roundID += 1
 
-        table.roundID += 1
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"      :"ROUND_STARTED",
                                 "ROUND_ID"  :str(table.roundID)
                              })
         ############ Betiing Ends
-
         for i in range(ROUND_TIME):
             if i in [4, 8]:
                 bot.placeBet(table.isComeOutRoll, CRAPS_BET)
@@ -201,7 +201,6 @@ def PLAYER_BETS(player, request):
 def CRAPS_BET(client, request):
     request['TOKEN'] = client.DATA['RID']
     roomName = client.DATA.get('CURRENT_ROOM', None)
-    print(client.DATA['INFO'][0], request['BETTING_ON'], request['AMOUNT'])
 
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
