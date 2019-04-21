@@ -38,20 +38,13 @@ def runRoom(roomName, roomPlayers, table):
             table.Reset()
             time.sleep(3)
             continue
-        else:
-            table.roundID += 1
-            sync_arr = []
-            for player in roomPlayers:
-                sync_arr.append(player.DATA['RID'])
-                sync_arr.append(str(player.DATA['INFO'][2]))
-                sync_arr.append(str(player.DATA['INFO'][1]))
 
-            for player in roomPlayers:
-                player.send_data({
-                                    "TYPE"      :"ROUND_STARTED",
-                                    "SYNC_ARR"  :str(sync_arr),
-                                    "ROUND_ID"  :str(table.roundID)
-                                 })
+        table.roundID += 1
+        for player in roomPlayers:
+            player.send_data({
+                                "TYPE"      :"ROUND_STARTED",
+                                "ROUND_ID"  :str(table.roundID)
+                             })
         ############ Betiing Ends
 
         for i in range(ROUND_TIME):
@@ -218,6 +211,10 @@ def CRAPS_BET(client, request):
                               "AMOUNT"     : request['AMOUNT']
                               })
 
+
+def SYNC(client, request):
+    request['TOKEN'] = client.DATA['RID']
+    broadcastRequest(client, request)
 
 
 ################################################################################
