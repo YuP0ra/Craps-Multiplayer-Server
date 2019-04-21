@@ -34,13 +34,11 @@ def runRoom(roomName, roomPlayers, table):
         ############ Betiing Starts
         if len(roomPlayers) == 1:
             table.ClearTableBets()
-            table.canPlay = False
             bot.fireupNewBot()
             table.Reset()
             time.sleep(3)
             continue
 
-        table.canPlay = True
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"      :"ROUND_STARTED",
@@ -64,7 +62,6 @@ def runRoom(roomName, roomPlayers, table):
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
         table.Roll(dice1, dice2)
-        table.canPlay = False
         table.roundID += 1
 
         for player in roomPlayers:
@@ -135,8 +132,7 @@ def JOIN_ROOM_REQUEST(player, request):
                                 "TOKEN"     : player.DATA['RID'],
                                 "ROOM_NAME" : request['ROOM_NAME'],
                                 "CHIPS_ARR" : str(roomAllowedBets[request['ROOM_NAME']]),
-                                "ROUND_ID"  : str(crapsRoomsTable[request['ROOM_NAME']].roundID),
-                                "CAN_BET"   : str(crapsRoomsTable[request['ROOM_NAME']].canPlay).upper()
+                                "ROUND_ID"  : str(crapsRoomsTable[request['ROOM_NAME']].roundID)
                               })
 
             player.send_data(crapsRoomsTable[request['ROOM_NAME']].MarkerInfo())
