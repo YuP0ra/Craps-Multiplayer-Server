@@ -38,8 +38,6 @@ def runRoom(roomName, roomPlayers, table):
             table.Reset()
             time.sleep(3)
             continue
-        else:
-            table.roundID += 1
 
         for player in roomPlayers:
             player.send_data({
@@ -64,6 +62,8 @@ def runRoom(roomName, roomPlayers, table):
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
         table.Roll(dice1, dice2)
+        table.roundID += 1
+
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"  : "DICE_ROLLED",
