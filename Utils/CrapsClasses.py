@@ -399,6 +399,7 @@ class CrapsTable:
         if bet not in self.ridBets[rid]:
             self.ridBets[rid][bet] = 0
         self.ridBets[rid][bet] += amount
+        print(bet, self.ridBets[rid][bet])
 
 
     def updateTableBet(self, rid, request):
