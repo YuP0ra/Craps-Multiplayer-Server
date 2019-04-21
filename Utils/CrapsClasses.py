@@ -347,7 +347,7 @@ class CrapsTable:
         if moneyOnLine > 0:
             self.roundResultsWIN.append(rid)
             self.roundResultsWIN.append(line)
-            self.roundResultsWIN.append(str(moneyOnLine))
+            self.roundResultsWIN.append(str(int(moneyOnLine)))
             self.ClearTableBet(rid, line)
 
 
@@ -357,7 +357,7 @@ class CrapsTable:
         if moneyOnLine > 0:
             self.roundResultsPUSH.append(rid)
             self.roundResultsPUSH.append(line)
-            self.roundResultsPUSH.append(str(moneyOnLine))
+            self.roundResultsPUSH.append(str(int(moneyOnLine)))
             self.ClearTableBet(rid, line)
 
 
