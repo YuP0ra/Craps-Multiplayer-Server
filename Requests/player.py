@@ -31,6 +31,6 @@ def PLAYER_INFO(client, request):
 
 
 def SET_MONEY_LEVEL(client, request):
-    client.DATA['INFO'] = [client.DATA['INFO'][0], 1, 1]
+    client.DATA['INFO'] = [client.DATA['INFO'][0], 1, 50000]
     client.DATA['INFO'][1] = request.get('LEVEL', 1)
     client.DATA['INFO'][2] = request.get('MONEY', 50000)

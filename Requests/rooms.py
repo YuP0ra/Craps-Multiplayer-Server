@@ -43,8 +43,8 @@ def runRoom(roomName, roomPlayers, table):
             sync_arr = []
             for player in roomPlayers:
                 sync_arr.append(player.DATA['RID'])
-                sync_arr.append(player.DATA['INFO'][1])
-                sync_arr.append(player.DATA['INFO'][2])
+                sync_arr.append(str(player.DATA['INFO'][2]))
+                sync_arr.append(str(player.DATA['INFO'][1]))
 
             for player in roomPlayers:
                 player.send_data({
