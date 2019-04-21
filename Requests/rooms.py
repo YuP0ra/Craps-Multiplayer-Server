@@ -201,6 +201,7 @@ def PLAYER_BETS(player, request):
 def CRAPS_BET(client, request):
     request['TOKEN'] = client.DATA['RID']
     roomName = client.DATA.get('CURRENT_ROOM', None)
+    print(client.DATA['INFO'][0], request['BETTING_ON'], request['AMOUNT'])
 
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
