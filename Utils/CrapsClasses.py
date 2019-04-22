@@ -38,30 +38,34 @@ class CrapsBot():
 
     def placeBet(self, firstRoll, func):
         if firstRoll:
-            validBets = ['passline', 'passline', 'dontpassline',
+            validBets = ['passline', 'passline', 'passline', 'passline', 'dontpassline',
                          'big6', 'big8',
+                         'prop0', 'prop7',
                          'lay4', 'lay5', 'lay6', 'lay8', 'lay9', 'lay10',
-                         'field']
+                         'field', 'field', 'field']
         else:
-            validBets = ['come', 'dontcome',
+            validBets = ['come', 'come', 'come', 'dontcome',
                          'big6', 'big8',
-                         'buy4', 'buy5', 'buy6', 'buy8', 'buy9', 'buy10',
-                         'field']
+                         'prop0', 'prop7',
+                         'lay4', 'lay5', 'lay6', 'lay8', 'lay9', 'lay10',
+                         'field', 'field', 'field']
 
         validBets = [x for x in validBets if x not in self._stck]
         val = random.choice(self.validChips[:-2])
         bet = random.choice(validBets)
         self._stck.append(bet)
 
-        request = { 'TYPE'      :'CRAPS_BET',
-                    'TOKEN'     :self.TOKEN,
-                    'ROUND_ID'  :self._roundID,
-                    'BETTING_ON':str(bet),
-                    'AMOUNT'    :str(val)
-                   }
+        bet_request = { 'TYPE'      :'CRAPS_BET',
+                        'TOKEN'     :self.TOKEN,
+                        'ROUND_ID'  :self._roundID,
+                        'BETTING_ON':str(bet),
+                        'AMOUNT'    :str(val)
+                       }
 
-        self._money -= val
-        func(self, request)
+        if self._money > val:
+            self._money -= val
+            func(self, bet_request)
+            self.DATA['INFO'][2] = self._money
 
 
     def send_data(self, request):
