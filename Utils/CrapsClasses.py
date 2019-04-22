@@ -191,25 +191,21 @@ class CrapsTable:
     def CheckCome(self, rid, firstRoll, targetPoint, totalDices):
         if totalDices in [4, 5, 6, 8, 9, 10]:
             payout = {4:2, 5:3/2, 6:6/5, 8:6/5, 9:3/2, 10:2}
-            self.WIN(rid, 'come' + str(totalDices), payout[totalDices])
+            self.WIN(rid, 'come' + str(totalDices))
             if firstRoll:
-                self.PUSH(rid, 'come' + str(totalDices) + 'odds')
                 self.PUSH(rid, 'comeodds' + str(totalDices))
             else:
-                self.WIN(rid, 'come' + str(totalDices) + 'odds', payout[totalDices])
                 self.WIN(rid, 'comeodds' + str(totalDices), payout[totalDices])
 
         if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.LOSE(rid, 'come' + str(odd))
                 if firstRoll:
-                    self.PUSH(rid, 'come' + str(odd) + 'odds')
                     self.PUSH(rid, 'comeodds' + str(odd))
                 else:
-                    self.LOSE(rid, 'come' + str(odd) + 'odds')
                     self.LOSE(rid, 'comeodds' + str(odd))
 
-        if not firstRoll and self.BetValue(rid, 'come'):
+        if not firstRoll and self.BetValue(rid, 'come') > 0:
             if totalDices in [7, 11]:
                 self.WIN(rid, 'come')
             elif totalDices in [2, 3, 12]:
@@ -223,15 +219,13 @@ class CrapsTable:
             payout = {4:1/2, 5:2/3, 6:5/6, 8:5/6, 9:2/3, 10:1/2}
             self.LOSE(rid, 'dontcome' + str(totalDices))
             self.LOSE(rid, 'dontcomeodds' + str(totalDices))
-            self.LOSE(rid, 'dontcome' + str(totalDices) + 'odds')
 
         if (totalDices == 7):
             for odd in [4, 5, 6, 8, 9, 10]:
                 self.WIN(rid, 'dontcome' + str(odd))
-                self.WIN(rid, 'dontcomeodds' + str(odd))
-                self.WIN(rid, 'dontcome' + str(odd) + 'odds')
+                self.WIN(rid, 'dontcomeodds' + str(odd), payout[odd])
 
-        if not firstRoll and self.BetValue(rid, 'dontcome'):
+        if not firstRoll and self.BetValue(rid, 'dontcome') > 0:
             if totalDices in [2, 3]:
                 self.WIN(rid, 'dontcome')
             elif totalDices in [7, 11]:
