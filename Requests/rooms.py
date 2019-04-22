@@ -18,7 +18,7 @@ def init():
         Thread(target=runRoom,
                args=(roomName, crapsRooms[roomName], crapsRoomsTable[roomName])
                ).start()
-
+    set('crapsRooms', crapsRooms)
 
 def runRoom(roomName, roomPlayers, table):
     ROUND_TIME, CALCULATIONS_TIME = 10, 1
@@ -110,7 +110,6 @@ def onConnectionEnded(client):
         if client in crapsRooms[roomName]:
             crapsRooms[roomName].remove(client)
         crapsRoomsTable[roomName].RemovePlayer(client.DATA['RID'])
-        get('decrementRoomActivity')(roomName)
         broadcastRequest(client, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                     "TOKEN" : client.DATA['RID']})
 
@@ -125,7 +124,6 @@ def JOIN_ROOM_REQUEST(player, request):
 
             player.DATA['RID'] = secrets.token_hex(10)
             player.DATA['CURRENT_ROOM'] = request['ROOM_NAME']
-            get('incrementRoomActivity')(request['ROOM_NAME'])
             crapsRooms[request['ROOM_NAME']].append(player)
 
             player.send_data({  "TYPE":"ROOM_JOIN_SUCCESS",
@@ -155,7 +153,6 @@ def LEAVE_ROOM_REQUEST(player, request):
             if player in crapsRooms[player.DATA['CURRENT_ROOM']]:
                 crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
             crapsRoomsTable[player.DATA['CURRENT_ROOM']].RemovePlayer(player.DATA['RID'])
-            get('decrementRoomActivity')(player.DATA['CURRENT_ROOM'])
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
                                         "TOKEN" : player.DATA['RID']})
             player.DATA['CURRENT_ROOM'] = None
