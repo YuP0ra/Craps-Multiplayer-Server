@@ -72,7 +72,11 @@ class CrapsBot():
         if 'TYPE' in request:
             if request['TYPE'] == 'ROUND_STARTED':
                 self._roundID = request['ROUND_ID']
+                self.DATA['INFO'][2] = self._money
                 self._stck = []
+
+            if request['TYPE'] == 'CLOCK_UPDATE':
+                self.DATA['INFO'][2] = self._money
 
 
 class CrapsTable:
