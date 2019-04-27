@@ -47,7 +47,7 @@ def runRoom(roomName, roomPlayers, table):
 
         ############ Betiing Ends
         for i in range(ROUND_TIME):
-            if i in [4, 8]:
+            if i in [5, 9]:
                 bot.placeBet(table.isComeOutRoll, CRAPS_BET)
 
             for player in roomPlayers:
@@ -141,7 +141,8 @@ def JOIN_ROOM_REQUEST(player, request):
                                         "TOKEN" : player.DATA['RID'],
                                         "NAME"  : str(player.DATA['INFO'][0]),
                                         "LEVEL" : str(player.DATA['INFO'][1]),
-                                        "MONEY" : str(player.DATA['INFO'][2])})
+                                        "MONEY" : str(player.DATA['INFO'][2]),
+                                        "IMAGE" : str(player.DATA['INFO'][3])})
         else:
             player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
     else:
@@ -171,12 +172,14 @@ def ROOM_PLAYERS_INFO(player, request):
         names   = [str(player.DATA['INFO'][0])] + [str(p.DATA['INFO'][0]) for p in players]
         levels  = [str(player.DATA['INFO'][1])] + [str(p.DATA['INFO'][1]) for p in players]
         moneies = [str(player.DATA['INFO'][2])] + [str(p.DATA['INFO'][2]) for p in players]
+        images  = [str(player.DATA['INFO'][3])] + [str(p.DATA['INFO'][2]) for p in players]
 
         player.send_data({"TYPE":   "ROOM_PLAYERS_INFO",
                                     "TOKEN"     : str(tokens),
                                     "NAME"      : str(names),
                                     "LEVEL"     : str(levels),
                                     "MONEY"     : str(moneies),
+                                    "IMAGES"    : str(images),
                                     "MARKER"    : str(crapsRoomsTable[roomName].marker),
                                     "ROUND_ID"  : str(crapsRoomsTable[roomName].roundID),
                                     "COMEROLL"  : str(crapsRoomsTable[roomName].isComeOutRoll),

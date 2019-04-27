@@ -175,7 +175,7 @@ class CrapsTable:
         if self.BetValue(rid, 'dontpassline') <= 0:
             return
 
-        payout = {4:2, 5:3/2, 6:6/5, 8:6/5, 9:3/2, 10:2}
+        payout = {4:1/2, 5:2/3, 6:5/6, 8:5/6, 9:2/3, 10:1/2}
         if firstRoll:
             if totalDices in [2, 3]:
                 self.WIN(rid, 'dontpassline')
@@ -476,21 +476,21 @@ class CrapsTable:
 
 
 # t = CrapsTable([1, 10, 100, 100])
-# t.appendTableBet('.', 'hard4', 6)
-# t.appendTableBet('.', 'hard6', 6)
-# t.appendTableBet('.', 'hard8', 6)
-# t.appendTableBet('.', 'hard10', 6)
-# t.Roll(4, 3)
-# print(t.roundResultsWIN)
-# print(t.roundResultsLOSE)
-# print(t.roundResultsPUSH)
-# print(t.roundNextBets)
+# t.appendTableBet('.', 'passline', 6)
+# t.Roll(4, 4)
 #
-# t.Roll(3, 2)
+# t.appendTableBet('.', 'dontcome', 6)
+# t.Roll(2, 2)
+#
+# t.appendTableBet('.', 'dontcomeodds4', 6)
+# t.appendTableBet('.', 'hard6', 6)
+# t.Roll(4, 3)
+#
 # print(t.roundResultsWIN)
 # print(t.roundResultsLOSE)
 # print(t.roundResultsPUSH)
 # print(t.roundNextBets)
+
 #
 #
 # t.appendTableBet('bot', 'passlineodds', 10)
