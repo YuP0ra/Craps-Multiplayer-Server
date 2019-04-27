@@ -21,7 +21,7 @@ class CrapsBot():
 
     def joinRoom(self, roomName, func):
         self.DATA['CURRENT_ROOM'] = None
-        self.DATA['INFO'] = ['bot', 10, 500000, '']
+        self.DATA['INFO'] = ['bot', 10, 500000, 'BOT']
         request = { 'TYPE'      :'JOIN_ROOM_REQUEST',
                     'ROOM_NAME' :roomName
                    }

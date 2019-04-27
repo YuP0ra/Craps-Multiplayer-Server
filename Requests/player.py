@@ -7,7 +7,7 @@ def onConnectionStarted(client):
                         "SERVER_ID" : str(client.clientID)})
 
     client.DATA['CURRENT_ROOM'] = None
-    client.DATA['INFO'] = ["Guest", 1, 50000, "URL"]
+    client.DATA['INFO'] = ["Guest", 1, 50000, "GUEST"]
     client.send_data({"TYPE": "GET_PLAYER_INFO"})
 
     print("Connection Started: ", client.address)
