@@ -63,7 +63,6 @@ def runRoom(roomName, roomPlayers, table):
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
         table.Roll(dice1, dice2)
-        table.roundID += 1
 
         for player in roomPlayers:
             player.send_data({
@@ -72,6 +71,8 @@ def runRoom(roomName, roomPlayers, table):
                                 "DICE2" : str(dice2)
                              })
 
+        table.roundID += 1
+        for player in roomPlayers:
             player.send_data({
                                 "TYPE"      : "ROUND_RESULT",
                                 "TOTAL"     : str(table.roundResultsTotalWins),
