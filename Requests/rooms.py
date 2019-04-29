@@ -72,11 +72,12 @@ def runRoom(roomName, roomPlayers, table):
                              })
 
         table.roundID += 1
-        
+
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"      : "ROUND_RESULT",
                                 "TOTAL"     : str(table.roundResultsTotalWins),
+                                "TOTALBETS" : str(table.TableTotalBetsList()),
                                 "WIN"       : str(table.roundResultsWIN),
                                 "PUSH"      : str(table.roundResultsPUSH),
                                 "LOSE"      : str(table.roundResultsLOSE),

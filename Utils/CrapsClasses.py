@@ -430,6 +430,18 @@ class CrapsTable:
             del self.ridBets[rid]
 
 
+    def TableTotalBetsList(self):
+        allTotalBets = []
+        for rid in self.ridBets:
+            total = 0
+            for bet in self.ridBets[rid]:
+                val = self.ridBets[rid][bet]
+                if val > 0:
+                    total += val
+            allTotalBets.append(str(rid))
+            allTotalBets.append(str(total))
+        return allTotalBets
+
     def TableBetsList(self):
         allValidBets = []
         for rid in self.ridBets:
