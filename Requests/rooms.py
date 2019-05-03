@@ -123,7 +123,7 @@ def JOIN_ROOM_REQUEST(player, request):
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
-    if 'FACEID' in request:
+    if 'FACEID' not in request:
         client.DATA['INFO'][3] = ''
     else:
         client.DATA['INFO'][3] = request['FACEID']
