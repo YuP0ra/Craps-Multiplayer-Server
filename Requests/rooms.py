@@ -123,6 +123,11 @@ def JOIN_ROOM_REQUEST(player, request):
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
+    if 'FACEID' in request:
+        client.DATA['INFO'][3] = ''
+    else:
+        client.DATA['INFO'][3] = request['FACEID']
+
     if player.DATA.get('CURRENT_ROOM', None) is None:
         if len(crapsRooms[request['ROOM_NAME']]) < 4:
 
