@@ -124,9 +124,9 @@ def JOIN_ROOM_REQUEST(player, request):
         return
 
     if 'FACEID' not in request:
-        client.DATA['INFO'][3] = ''
+        player.DATA['INFO'][3] = ''
     else:
-        client.DATA['INFO'][3] = request['FACEID']
+        player.DATA['INFO'][3] = request['FACEID']
 
     if player.DATA.get('CURRENT_ROOM', None) is None:
         if len(crapsRooms[request['ROOM_NAME']]) < 4:
