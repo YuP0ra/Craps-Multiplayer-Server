@@ -34,7 +34,7 @@ class CrapsBot():
         money = [1000000, 2000000, 300000, 400000, 500000, 6000000, 7000000, 8000000, 9000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,]
 
         self._money = money[index]
-        self.DATA['INFO'] = [names[index], leves[index], money[index]]
+        self.DATA['INFO'] = [names[index], leves[index], money[index], '']
 
     def placeBet(self, firstRoll, func):
         if firstRoll:

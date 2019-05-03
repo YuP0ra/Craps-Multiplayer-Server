@@ -170,20 +170,23 @@ def LEAVE_ROOM_REQUEST(player, request):
 def ROOM_PLAYERS_INFO(player, request):
     roomName = player.DATA.get('CURRENT_ROOM', None)
     if roomName in crapsRooms:
-        players = [x for x in crapsRooms[roomName] if x != player]
+        players = [player] + [x for x in crapsRooms[roomName] if x != player]
 
-        tokens  = [str(player.DATA['RID'])]     + [str(p.DATA['RID']) for p in players]
-        names   = [str(player.DATA['INFO'][0])] + [str(p.DATA['INFO'][0]) for p in players]
-        levels  = [str(player.DATA['INFO'][1])] + [str(p.DATA['INFO'][1]) for p in players]
-        moneies = [str(player.DATA['INFO'][2])] + [str(p.DATA['INFO'][2]) for p in players]
-        images  = [str(player.DATA['INFO'][3])] + [str(p.DATA['INFO'][3]) for p in players]
+        for p in players:
+            print(p.DATA['INFO'])
+
+        tokens  = [str(p.DATA['RID']) for p in players]
+        names   = [str(p.DATA['INFO'][0]) for p in players]
+        levels  = [str(p.DATA['INFO'][1]) for p in players]
+        moneies = [str(p.DATA['INFO'][2]) for p in players]
+        fbids   = [str(p.DATA['INFO'][3]) for p in players]
 
         player.send_data({"TYPE":   "ROOM_PLAYERS_INFO",
                                     "TOKEN"     : str(tokens),
                                     "NAME"      : str(names),
                                     "LEVEL"     : str(levels),
                                     "MONEY"     : str(moneies),
-                                    "IMAGES"    : str(images),
+                                    "IMAGES"    : str(fbids),
                                     "MARKER"    : str(crapsRoomsTable[roomName].marker),
                                     "ROUND_ID"  : str(crapsRoomsTable[roomName].roundID),
                                     "COMEROLL"  : str(crapsRoomsTable[roomName].isComeOutRoll),
