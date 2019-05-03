@@ -123,11 +123,7 @@ def JOIN_ROOM_REQUEST(player, request):
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
-    if 'FACEID' not in request:
-        player.DATA['INFO'][3] = ''
-    else:
-        player.DATA['INFO'][3] = request['FACEID']
-
+    player.DATA['INFO'][3] = request.get('FACEID', '')
     if player.DATA.get('CURRENT_ROOM', None) is None:
         if len(crapsRooms[request['ROOM_NAME']]) < 4:
 
@@ -180,7 +176,7 @@ def ROOM_PLAYERS_INFO(player, request):
         names   = [str(player.DATA['INFO'][0])] + [str(p.DATA['INFO'][0]) for p in players]
         levels  = [str(player.DATA['INFO'][1])] + [str(p.DATA['INFO'][1]) for p in players]
         moneies = [str(player.DATA['INFO'][2])] + [str(p.DATA['INFO'][2]) for p in players]
-        images  = [str(player.DATA['INFO'][3])] + [str(p.DATA['INFO'][2]) for p in players]
+        images  = [str(player.DATA['INFO'][3])] + [str(p.DATA['INFO'][3]) for p in players]
 
         player.send_data({"TYPE":   "ROOM_PLAYERS_INFO",
                                     "TOKEN"     : str(tokens),
