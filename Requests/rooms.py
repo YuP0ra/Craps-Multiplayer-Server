@@ -212,6 +212,10 @@ def CRAPS_BET(client, request):
 
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
+            client.send_data({"TYPE"       : "BET_SUCCESS",
+                              "BETTING_ON" : request['BETTING_ON'],
+                              "AMOUNT"     : request['AMOUNT']
+                              })
             broadcastRequest(client, request)
         else:
             client.send_data({"TYPE"       : "BET_ERROR",

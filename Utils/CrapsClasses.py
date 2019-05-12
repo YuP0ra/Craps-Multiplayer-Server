@@ -483,37 +483,3 @@ class CrapsTable:
                 "COMEROLL"  : str(self.isComeOutRoll),
                 "MARKER"    : str(self.marker)
                }
-
-
-
-
-# t = CrapsTable([1, 10, 100, 100])
-# t.appendTableBet('.', 'passline', 6)
-# t.Roll(4, 4)
-#
-# t.appendTableBet('.', 'dontcome', 6)
-# t.Roll(2, 2)
-#
-# t.appendTableBet('.', 'dontcomeodds4', 6)
-# t.appendTableBet('.', 'hard6', 6)
-# t.Roll(4, 3)
-#
-# print(t.roundResultsWIN)
-# print(t.roundResultsLOSE)
-# print(t.roundResultsPUSH)
-# print(t.roundNextBets)
-
-#
-#
-# t.appendTableBet('bot', 'passlineodds', 10)
-# t.appendTableBet('bot', 'come', 10)
-# t.Roll(4, 5)
-# print(t.roundResultsWIN)
-#
-# t.appendTableBet('bot', 'come9odds', 10)
-# t.Roll(4, 4)
-# print(t.roundResultsWIN)
-#
-# t.Roll(4, 5)
-# print(t.roundResultsWIN)
-# print(t.roundResultsPUSH)
