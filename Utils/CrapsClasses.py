@@ -414,13 +414,13 @@ class CrapsTable:
         if 'ROUND_ID' in request:
             if self.canPlay:
                 if request['ROUND_ID'] == str(self.roundID):
-                    if request['BETTING_ON'] == 'dontpasslineodds':
+                    if request['BETTING_ON'] == 'passlineodds':
                         factor = {4:3, 5:4, 6:5, 8:5, 9:4, 10:3}
                         if self.BetValue(rid, 'passlineodds') >= self.BetValue(rid, 'passline') * factor[self.marker]:
                             return False
 
                     if request['BETTING_ON'] == 'dontpasslineodds':
-                        if self.BetValue(rid, 'passlineodds') >= self.BetValue(rid, 'passline') * 6:
+                        if self.BetValue(rid, 'dontpasslineodds') >= self.BetValue(rid, 'dontpassline') * 6:
                             return False
 
                     if 'comeodds' in request['BETTING_ON']:
@@ -428,8 +428,6 @@ class CrapsTable:
                         if self.BetValue(rid, request['BETTING_ON']) >= self.BetValue(rid, request['BETTING_ON'].replace('odds', '')) * factor[int(request['BETTING_ON'][8:])]:
                             return False
 
-                    if request['BETTING_ON'] == 'dontpasslineodds':
-                        pass
                     self.appendTableBet(rid, request['BETTING_ON'], int(request['AMOUNT']))
                     return True
         return False
