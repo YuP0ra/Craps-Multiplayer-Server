@@ -175,9 +175,6 @@ def ROOM_PLAYERS_INFO(player, request):
     if roomName in crapsRooms:
         players = [player] + [x for x in crapsRooms[roomName] if x != player]
 
-        for p in players:
-            print(p.DATA['INFO'])
-
         tokens  = [str(p.DATA['RID']) for p in players]
         names   = [str(p.DATA['INFO'][0]) for p in players]
         levels  = [str(p.DATA['INFO'][1]) for p in players]
@@ -225,6 +222,18 @@ def CRAPS_BET(client, request):
                               "BETTING_ON" : request['BETTING_ON'],
                               "AMOUNT"     : request['AMOUNT']
                               })
+
+
+def CRAPS_CLEAR(client, request):
+    request['TOKEN'] = client.DATA['RID']
+    roomName = client.DATA.get('CURRENT_ROOM', None)
+
+    if roomName in crapsRoomsTable:
+        if crapsRoomsTable[roomName].clearTableBet(client.DATA['RID'], request):
+            client.send_data({"TYPE"       : "CLEAR_SUCCESS",
+                              "BETTING_ON" : request['BETTING_ON']
+                              })
+            broadcastRequest(client, request)
 
 
 def SYNC(client, request):

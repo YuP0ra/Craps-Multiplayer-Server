@@ -404,6 +404,12 @@ class CrapsTable:
         self.ridBets[rid][bet] += amount
 
 
+    def removeTableBet(self, rid, bet):
+        if rid in self.ridBets:
+            if bet in self.ridBets[rid]:
+                self.ridBets[rid][bet] = 0
+
+
     def updateTableBet(self, rid, request):
         if 'ROUND_ID' in request:
             if self.canPlay:
@@ -412,6 +418,13 @@ class CrapsTable:
                     return True
         return False
 
+    def clearTableBet(self, rid, request):
+        if 'ROUND_ID' in request:
+            if self.canPlay:
+                if request['ROUND_ID'] == str(self.roundID):
+                    self.removeTableBet(rid, request['BETTING_ON'])
+                    return True
+        return False
 
     def ClearTableBet(self, rid, bet):
         if rid in self.ridBets:
