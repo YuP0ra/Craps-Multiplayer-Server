@@ -426,7 +426,7 @@ class CrapsTable:
 
                     if 'dontcomeodds' in request['BETTING_ON']:
                         factor = {4:3, 5:4, 6:5, 8:5, 9:4, 10:3}
-                        if self.BetValue(rid, request['BETTING_ON']) >= self.BetValue(rid, request['BETTING_ON'].replace('odds', '')) * factor[int(request['BETTING_ON'][11:])]:
+                        if self.BetValue(rid, request['BETTING_ON']) >= self.BetValue(rid, request['BETTING_ON'].replace('odds', '')) * factor[int(request['BETTING_ON'][12:])]:
                             return False
 
                     if 'comeodds' in request['BETTING_ON']:
