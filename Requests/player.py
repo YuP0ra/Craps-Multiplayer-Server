@@ -2,6 +2,7 @@ import time
 from Kernel.database import get, set
 
 
+
 def onConnectionStarted(client):
     client.send_data({  "TYPE"      : "CONNECTED",
                         "SERVER_ID" : str(client.clientID)})

@@ -6,6 +6,7 @@ from Kernel.database import get, set
 roomsInfo = None
 
 
+
 ################################################################################
 def SET_TOKEN(client, request):
     if get('tokensDB').get(request['TOKEN'], None) is not None:
