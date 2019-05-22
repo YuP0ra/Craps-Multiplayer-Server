@@ -136,10 +136,8 @@ class CrapsTable:
 
         for rid, total in self.ridTotalWin.items():
             total = 0 if total < 0 else total
-            self.roundResultsTotalWins.append(rid)
+            self.roundResultsTotalWins.append(str(rid))
             self.roundResultsTotalWins.append(str(total))
-
-        self.updateNextRoundBets()
 
 
     def BetValue(self, rid, betName):
@@ -348,8 +346,8 @@ class CrapsTable:
         moneyOnLine = int(ceil(self.BetValue(rid, line) * (1 + factor)))
         self.ridTotalWin[rid] += moneyOnLine
         if moneyOnLine > 0:
-            self.roundResultsWIN.append(rid)
-            self.roundResultsWIN.append(line)
+            self.roundResultsWIN.append(str(rid))
+            self.roundResultsWIN.append(str(line))
             self.roundResultsWIN.append(str(int(moneyOnLine)))
             self.ClearTableBet(rid, line)
 
@@ -358,8 +356,8 @@ class CrapsTable:
         moneyOnLine = self.BetValue(rid, line)
         self.ridTotalWin[rid] += moneyOnLine
         if moneyOnLine > 0:
-            self.roundResultsPUSH.append(rid)
-            self.roundResultsPUSH.append(line)
+            self.roundResultsPUSH.append(str(rid))
+            self.roundResultsPUSH.append(str(line))
             self.roundResultsPUSH.append(str(int(moneyOnLine)))
             self.ClearTableBet(rid, line)
 
@@ -368,8 +366,8 @@ class CrapsTable:
         moneyOnLine = self.BetValue(rid, line)
         self.ridTotalWin[rid] -= moneyOnLine
         if moneyOnLine > 0:
-            self.roundResultsLOSE.append(rid)
-            self.roundResultsLOSE.append(line)
+            self.roundResultsLOSE.append(str(rid))
+            self.roundResultsLOSE.append(str(line))
             self.roundResultsLOSE.append(str(int(moneyOnLine)))
             self.ClearTableBet(rid, line)
 
@@ -379,21 +377,11 @@ class CrapsTable:
         moneyOnNewLine = self.BetValue(rid, newLine)
         if moneyOnOldLine > 0:
             self.appendTableBet(rid, newLine, moneyOnOldLine + moneyOnNewLine)
-            self.roundResultsMOVE.append(rid)
-            self.roundResultsMOVE.append(oldLine)
-            self.roundResultsMOVE.append(newLine)
+            self.roundResultsMOVE.append(str(rid))
+            self.roundResultsMOVE.append(str(oldLine))
+            self.roundResultsMOVE.append(str(newLine))
             self.ClearTableBet(rid, oldLine)
 
-
-    def updateNextRoundBets(self):
-        self.roundNextBets = []
-        for rid in self.ridBets:
-            for bet in self.ridBets[rid]:
-                val = self.ridBets[rid][bet]
-                if val > 0:
-                    self.roundNextBets.append(rid)
-                    self.roundNextBets.append(bet)
-                    self.roundNextBets.append(str(val))
 
 
     def appendTableBet(self, rid, bet, amount):

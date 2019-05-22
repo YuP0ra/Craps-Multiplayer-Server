@@ -82,7 +82,6 @@ def runRoom(roomName, roomPlayers, table):
                                 "PUSH"      : str(table.roundResultsPUSH),
                                 "LOSE"      : str(table.roundResultsLOSE),
                                 "MOVE"      : str(table.roundResultsMOVE),
-                                "NEXT"      : str(table.roundNextBets),
                                 "COMEROLL"  : str(table.isComeOutRoll),
                                 "MARKER"    : str(table.marker)
                              })
@@ -212,6 +211,7 @@ def CRAPS_BET(client, request):
 
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
+            client.DATA['INFO'][2] = str(int(client.DATA['INFO'][2]) + int(request['AMOUNT']))
             client.send_data({"TYPE"       : "BET_SUCCESS",
                               "BETTING_ON" : request['BETTING_ON'],
                               "AMOUNT"     : request['AMOUNT']
