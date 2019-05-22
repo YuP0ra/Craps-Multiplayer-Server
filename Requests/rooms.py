@@ -211,7 +211,7 @@ def CRAPS_BET(client, request):
 
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
-            client.DATA['INFO'][2] = str(int(client.DATA['INFO'][2]) + int(request['AMOUNT']))
+            client.DATA['INFO'][2] = str(int(client.DATA['INFO'][2]) - int(request['AMOUNT']))
             client.send_data({"TYPE"       : "BET_SUCCESS",
                               "BETTING_ON" : request['BETTING_ON'],
                               "AMOUNT"     : request['AMOUNT']
