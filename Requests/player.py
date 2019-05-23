@@ -22,6 +22,10 @@ def onConnectionEnded(client):
     print("Connection Terminated: ", client.address)
 
 
+def PING(client, request):
+    client.send_data(request)
+
+
 def SET_TOKEN(client, request):
     client.TOKEN = request['TOKEN']
     client.send_data({"TYPE": "TOKEN_SET_SUCCESS", "TOKEN": client.TOKEN})
