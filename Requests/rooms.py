@@ -236,6 +236,14 @@ def CRAPS_CLEAR(client, request):
             broadcastRequest(client, request)
 
 
+def CRAPS_CLEAR(client, request):
+    request['TOKEN'] = client.DATA['RID']
+    roomName = client.DATA.get('CURRENT_ROOM', None)
+    if roomName in crapsRoomsTable:
+        crapsRoomsTable[roomName].ClearPlayerBets(client.DATA['RID'])
+        broadcastRequest(client, request)
+
+
 def SYNC(client, request):
     request['TOKEN'] = client.DATA['RID']
     broadcastRequest(client, request)

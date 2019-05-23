@@ -442,6 +442,12 @@ class CrapsTable:
                 self.ridBets[rid][bet] = 0
 
 
+    def ClearPlayerBets(self, rid):
+        if rid in self.ridBets:
+            for bet in self.ridBets[rid]:
+                self.ridBets[rid][bet] = 0
+
+
     def RemovePlayer(self, rid):
         if rid in self.ridBets:
             del self.ridBets[rid]
