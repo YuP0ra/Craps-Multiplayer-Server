@@ -21,7 +21,7 @@ def init():
     set('crapsRooms', crapsRooms)
 
 def runRoom(roomName, roomPlayers, table):
-    ROUND_TIME, CALCULATIONS_TIME = 15, 1
+    ROUND_TIME, CALCULATIONS_TIME = 2, 1
 
     bot = CrapsBot(table.validChips)
     bot.joinRoom(roomName, JOIN_ROOM_REQUEST)
