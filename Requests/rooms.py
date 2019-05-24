@@ -21,7 +21,7 @@ def init():
     set('crapsRooms', crapsRooms)
 
 def runRoom(roomName, roomPlayers, table):
-    ROUND_TIME, CALCULATIONS_TIME = 2, 1
+    ROUND_TIME, CALCULATIONS_TIME = 15, 1
 
     bot = CrapsBot(table.validChips)
     bot.joinRoom(roomName, JOIN_ROOM_REQUEST)
@@ -228,6 +228,7 @@ def CRAPS_CLEAR(client, request):
     request['TOKEN'] = client.DATA['RID']
     roomName = client.DATA.get('CURRENT_ROOM', None)
 
+    print("Clearning line", request['BETTING_ON'])
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].clearTableBet(client.DATA['RID'], request):
             client.send_data({"TYPE"       : "CLEAR_SUCCESS",
@@ -236,7 +237,7 @@ def CRAPS_CLEAR(client, request):
             broadcastRequest(client, request)
 
 
-def CRAPS_CLEAR(client, request):
+def SWITCH_SCREEN_MODE(client, request):
     request['TOKEN'] = client.DATA['RID']
     roomName = client.DATA.get('CURRENT_ROOM', None)
     if roomName in crapsRoomsTable:
