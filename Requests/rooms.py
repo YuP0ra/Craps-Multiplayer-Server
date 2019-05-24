@@ -122,15 +122,15 @@ def JOIN_ROOM_REQUEST(player, request):
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
-    if request['SERVERID'] not in crapsRooms:
-        player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
-        return
-
-    if player in crapsRooms[request['ROOM_NAME']]:
+    if 'SERVERID' not in request:
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
     if request['SERVERID'] == "":
+        player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
+        return
+
+    if player in crapsRooms[request['ROOM_NAME']]:
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
