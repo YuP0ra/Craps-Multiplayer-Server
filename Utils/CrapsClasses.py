@@ -23,6 +23,7 @@ class CrapsBot():
         self.DATA['CURRENT_ROOM'] = None
         self.DATA['INFO'] = ['bot', 10, 500000, '']
         request = { 'TYPE'      :'JOIN_ROOM_REQUEST',
+                    'SERVERID'  :'123456',
                     'ROOM_NAME' :roomName
                    }
         func(self, request)
