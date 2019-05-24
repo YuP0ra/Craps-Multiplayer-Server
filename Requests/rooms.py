@@ -126,7 +126,8 @@ def JOIN_ROOM_REQUEST(player, request):
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
-    if request['SERVERID'] == "":
+    if request['SERVERID'] == "" or request['SERVERID'] == "0":
+        print("Invalid serverID to join room")
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
 
