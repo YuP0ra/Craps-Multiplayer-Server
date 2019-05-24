@@ -227,8 +227,6 @@ def CRAPS_BET(client, request):
 def CRAPS_CLEAR(client, request):
     request['TOKEN'] = client.DATA['RID']
     roomName = client.DATA.get('CURRENT_ROOM', None)
-
-    print("Clearning line", request['BETTING_ON'])
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].clearTableBet(client.DATA['RID'], request):
             client.send_data({"TYPE"       : "CLEAR_SUCCESS",
