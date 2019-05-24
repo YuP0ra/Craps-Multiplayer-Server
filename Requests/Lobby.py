@@ -8,14 +8,6 @@ roomsInfo = None
 
 
 ################################################################################
-def SET_TOKEN(client, request):
-    if get('tokensDB').get(request['TOKEN'], None) is not None:
-        client.send_data({
-                            "TYPE":         "REJOIN_ROOM",
-                            "ROOM_NAME":    get('tokensDB')[request['TOKEN']]
-                         })
-
-
 def GET_LOBBY_ROOMS(player, request):
     crapsRooms = get('crapsRooms')
     roomsInfo['active_players'] = [len(crapsRooms[room]) for room in crapsRooms]
