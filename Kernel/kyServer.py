@@ -134,10 +134,12 @@ class RemoteClient():
                 if len(self._stack) == 0:
                     time.sleep(0.02)
                 else:
-                    data_dict = self._stack.pop(0)
-                    json_form = json.dumps(data_dict) + "<EOF>"
+                    json_form = ""
+                    for request_dict in self._stack:
+                        json_form += json.dumps(request_dict) + "<EOF>"
                     valid_socket_form = json_form.encode('ascii')
                     self._socket.sendall(valid_socket_form)
+                    self._stack = []
             except Exception as e:
                 self.on_client_disconnect()
                 return None
