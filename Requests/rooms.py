@@ -21,13 +21,10 @@ def init():
     set('crapsRooms', crapsRooms)
 
 def runRoom(roomName, roomPlayers, table):
-    ROUND_TIME, CALCULATIONS_TIME = 15, 1
+    ROUND_TIME, CALCULATIONS_TIME = 5, 1
 
     bot = CrapsBot(table.validChips)
     bot.joinRoom(roomName, JOIN_ROOM_REQUEST)
-
-    arr1 = [3, 3, 3, 4, 4]
-    arr2 = [3, 2, 3, 3, 4]
 
     while True:
         initTime = time.time()
@@ -42,9 +39,10 @@ def runRoom(roomName, roomPlayers, table):
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"      :"ROUND_STARTED",
+                                "BETS"      : str(crapsRoomsTable[roomName].TableBetsList()),
                                 "COMEROLL"  : str(table.isComeOutRoll),
                                 "MARKER"    : str(table.marker),
-                                "ROUND_ID"  :str(table.roundID)
+                                "ROUND_ID"  : str(table.roundID)
                              })
 
         ############ Betiing Ends
@@ -64,6 +62,7 @@ def runRoom(roomName, roomPlayers, table):
             continue
 
         dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
+
         table.Roll(dice1, dice2)
 
         for player in roomPlayers:
