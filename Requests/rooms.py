@@ -104,7 +104,6 @@ def broadcastRequest(sender, request):
         for player in crapsRooms[roomName]:
             if not sender.TOKEN == player.TOKEN:
                 player.send_data(request)
-        sender.send_data({"TYPE": "BROADCAST_SUCCESS", "BROADCAST_TYPE": request['TYPE']})
 
 
 ################################################################################
@@ -115,7 +114,7 @@ def onConnectionEnded(client):
             crapsRooms[roomName].remove(client)
         crapsRoomsTable[roomName].RemovePlayer(client.DATA['RID'])
         broadcastRequest(client, {  "TYPE"  : "NEW_PLAYER_LEFT",
-                                    "TOKEN" : client.DATA['RID']})
+                                    "TOKEN" : str(client.DATA['RID'])})
 
 
 def JOIN_ROOM_REQUEST(player, request):
@@ -145,8 +144,8 @@ def JOIN_ROOM_REQUEST(player, request):
             crapsRooms[request['ROOM_NAME']].append(player)
 
             player.send_data({  "TYPE":"ROOM_JOIN_SUCCESS",
-                                "TOKEN"     : player.DATA['RID'],
-                                "ROOM_NAME" : request['ROOM_NAME'],
+                                "TOKEN"     : str(player.DATA['RID']),
+                                "ROOM_NAME" : str(request['ROOM_NAME']),
                                 "CHIPS_ARR" : str(roomAllowedBets[request['ROOM_NAME']]),
                                 "ROUND_ID"  : str(crapsRoomsTable[request['ROOM_NAME']].roundID)
                               })
@@ -155,7 +154,7 @@ def JOIN_ROOM_REQUEST(player, request):
             tokensDB[player.TOKEN] = request['ROOM_NAME']
 
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_JOINED",
-                                        "TOKEN" : player.DATA['RID'],
+                                        "TOKEN" : str(player.DATA['RID']),
                                         "NAME"  : str(player.DATA['INFO'][0]),
                                         "LEVEL" : str(player.DATA['INFO'][1]),
                                         "MONEY" : str(player.DATA['INFO'][2]),
@@ -173,7 +172,7 @@ def LEAVE_ROOM_REQUEST(player, request):
                 crapsRooms[player.DATA['CURRENT_ROOM']].remove(player)
             crapsRoomsTable[player.DATA['CURRENT_ROOM']].RemovePlayer(player.DATA['RID'])
             broadcastRequest(player, {  "TYPE"  : "NEW_PLAYER_LEFT",
-                                        "TOKEN" : player.DATA['RID']})
+                                        "TOKEN" : str(player.DATA['RID'])})
             player.DATA['CURRENT_ROOM'] = None
             tokensDB.pop(player.TOKEN, None)
         except Exception as e:
@@ -224,14 +223,14 @@ def CRAPS_BET(client, request):
         if crapsRoomsTable[roomName].updateTableBet(client.DATA['RID'], request):
             client.DATA['INFO'][2] = str(int(client.DATA['INFO'][2]) - int(request['AMOUNT']))
             client.send_data({"TYPE"       : "BET_SUCCESS",
-                              "BETTING_ON" : request['BETTING_ON'],
-                              "AMOUNT"     : request['AMOUNT']
+                              "BETTING_ON" : str(request['BETTING_ON']),
+                              "AMOUNT"     : str(request['AMOUNT'])
                               })
             broadcastRequest(client, request)
         else:
             client.send_data({"TYPE"       : "BET_ERROR",
-                              "BETTING_ON" : request['BETTING_ON'],
-                              "AMOUNT"     : request['AMOUNT']
+                              "BETTING_ON" : str(request['BETTING_ON']),
+                              "AMOUNT"     : str(request['AMOUNT'])
                               })
 
 
@@ -241,7 +240,7 @@ def CRAPS_CLEAR(client, request):
     if roomName in crapsRoomsTable:
         if crapsRoomsTable[roomName].clearTableBet(client.DATA['RID'], request):
             client.send_data({"TYPE"       : "CLEAR_SUCCESS",
-                              "BETTING_ON" : request['BETTING_ON']
+                              "BETTING_ON" : str(request['BETTING_ON'])
                               })
             broadcastRequest(client, request)
 
