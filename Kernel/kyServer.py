@@ -68,7 +68,7 @@ class GameServer(asyncore.dispatcher):
         pair = self.accept()
         if pair is not None:
             sockt, address = pair
-            RemoteClient(sockt, address, self.processClientEvents, self.processClientRequest)
+            RemoteClient(sockt, address, self.processClientEvents, self.processClientRequest).handle_connect()
 
     def processClientEvents(self, client, event):
         if event in self.__methods:
@@ -106,7 +106,7 @@ class RemoteClient(asyncore.dispatcher_with_send):
 
     def handle_write(self):
         sent = self.send(self._send_buffer)
-        if sent is not None:
+        if sent is not None or sent = 0:
             self._send_buffer = self._send_buffer[sent:]
         else:
             self._send_buffer = bytes('', 'ascii')

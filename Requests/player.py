@@ -4,7 +4,7 @@ from Kernel.database import get, set
 
 
 def onConnectionStarted(client):
-    client.send_data({"TYPE": "CONNECTED")})
+    client.send_data({"TYPE": "CONNECTED"})
     print("Connection Started: ", client.address)
 
     client.DATA['CURRENT_ROOM'] = None
