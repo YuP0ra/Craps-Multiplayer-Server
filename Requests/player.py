@@ -4,14 +4,12 @@ from Kernel.database import get, set
 
 
 def onConnectionStarted(client):
-    client.send_data({  "TYPE"      : "CONNECTED",
-                        "SERVER_ID" : str(client.clientID)})
+    client.send_data({"TYPE": "CONNECTED")})
+    print("Connection Started: ", client.address)
 
     client.DATA['CURRENT_ROOM'] = None
-    client.DATA['INFO'] = ["New Guest", 1, 50000, '']
+    client.DATA['INFO'] = ["Guest", 1, 50000, '']
     client.send_data({"TYPE": "GET_PLAYER_INFO"})
-
-    print("Connection Started: ", client.address)
 
 
 def onConnectionTimeout(client):

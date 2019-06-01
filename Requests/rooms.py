@@ -39,7 +39,6 @@ def runRoom(roomName, roomPlayers, table):
         for player in roomPlayers:
             player.send_data({
                                 "TYPE"      :"ROUND_STARTED",
-                                "BETS"      : str(crapsRoomsTable[roomName].TableBetsList()),
                                 "COMEROLL"  : str(table.isComeOutRoll),
                                 "MARKER"    : str(table.marker),
                                 "ROUND_ID"  : str(table.roundID)
