@@ -38,8 +38,9 @@ class GameServer(asyncore.dispatcher):
         for loop in self.__loops:
             Thread(target=loop).start()
 
-        print("Server loop started on main thread")
-        asyncore.loop()
+        print("Server started on main thread")
+        asyncore.loop(timeout=0.5, use_poll=True)
+
 
     def _loadScripts(self,):
         scripts = [x for x in os.listdir(self.PATH) if x[-3:] == '.py']
@@ -102,20 +103,24 @@ class RemoteClient(asyncore.dispatcher_with_send):
         return self.TOKEN == other.TOKEN
 
     def writable(self):
+        print("Checking for valid data to send.")
         return len(self._send_buffer) > 0
 
     def handle_write(self):
         sent = self.send(self._send_buffer)
-        if sent is not None or sent == 0:
-            self._send_buffer = self._send_buffer[sent:]
-        else:
+
+        if sent is None:
+            print("alll %s \tbytes data were sent." % len(self._send_buffer))
             self._send_buffer = bytes('', 'ascii')
+        else:
+            print("only %s \tbytes data were sent." % sent)
+            self._send_buffer = self._send_buffer[sent:]
 
     def handle_read(self):
-        data = self.recv(2048)
-        self._recv_buffer += data
+        data = self.recv(4096)
 
         if not data: return
+        self._recv_buffer += data
         if not data.endswith(bytes('<EOF>', 'ascii')): return
 
         for request in self._recv_buffer.decode('ascii').split('<EOF>'):
@@ -128,6 +133,7 @@ class RemoteClient(asyncore.dispatcher_with_send):
         marked_request      = json.dumps(request_dict) + "<EOF>"
         request_bytes       = marked_request.encode('ascii')
         self._send_buffer   = self._send_buffer + request_bytes
+        print("new data queued to be sent, total len is: %s" % len(self._send_buffer))
 
     def handle_connect(self,):
         self._on_event(self, "onConnectionStarted")
