@@ -39,7 +39,7 @@ class GameServer(asyncore.dispatcher):
             Thread(target=loop).start()
 
         print("Server started on main thread")
-        asyncore.loop(timeout=0.2, use_poll=True)
+        asyncore.loop(timeout=0.05, use_poll=True)
 
 
     def _loadScripts(self,):
@@ -130,7 +130,7 @@ class RemoteClient(asyncore.dispatcher_with_send):
         marked_request      = json.dumps(request_dict) + "<EOF>"
         request_bytes       = marked_request.encode('ascii')
         self._send_buffer   = self._send_buffer + request_bytes
-        
+
         sent = self.send(self._send_buffer)
         if sent is None:
             self._send_buffer = bytes('', 'ascii')
