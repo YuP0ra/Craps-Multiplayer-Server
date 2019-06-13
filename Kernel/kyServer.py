@@ -39,7 +39,7 @@ class GameServer(asyncore.dispatcher):
             Thread(target=loop).start()
 
         print("Server started on main thread")
-        asyncore.loop(timeout=10, use_poll=True)
+        asyncore.loop(timeout=0.2, use_poll=True)
 
 
     def _loadScripts(self,):
