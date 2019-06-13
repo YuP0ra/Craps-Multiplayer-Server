@@ -39,7 +39,7 @@ class GameServer(asyncore.dispatcher):
             Thread(target=loop).start()
 
         print("Server started on main thread")
-        asyncore.loop(timeout=0.05, use_poll=True)
+        asyncore.loop(timeout=0.2, use_poll=True)
 
 
     def _loadScripts(self,):
@@ -114,17 +114,20 @@ class RemoteClient(asyncore.dispatcher_with_send):
             self._send_buffer = self._send_buffer[sent:]
 
     def handle_read(self):
-        data = self.recv(4096)
+        try:
+            data = self.recv(4096)
 
-        if not data: return
-        self._recv_buffer += data
-        if not data.endswith(bytes('<EOF>', 'ascii')): return
+            if not data: return
+            self._recv_buffer += data
+            if not data.endswith(bytes('<EOF>', 'ascii')): return
 
-        for request in self._recv_buffer.decode('ascii').split('<EOF>'):
-            if len(request) > 0:
-                request = json.loads(request)
-                if 'TYPE' in request: self._on_request(self, request)
-        self._recv_buffer = bytes('', 'ascii')
+            for request in self._recv_buffer.decode('ascii').split('<EOF>'):
+                if len(request) > 0:
+                    request = json.loads(request)
+                    if 'TYPE' in request: self._on_request(self, request)
+            self._recv_buffer = bytes('', 'ascii')
+        except Exception as e:
+            pass
 
     def send_data(self, request_dict):
         marked_request      = json.dumps(request_dict) + "<EOF>"
