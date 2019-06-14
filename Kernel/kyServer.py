@@ -1,48 +1,44 @@
-import os
-import json
-import time
-import socket
-import secrets
-import inspect
-import asyncore
-import importlib
-
-from socket import timeout
+import os, json, time, socket, secrets, importlib, inspect
 from threading import Thread
+from socket import timeout
+
+from . import database
 
 
-class GameServer(asyncore.dispatcher):
+class GameServer(Thread):
     def __init__(self, HOSTNAME, PORT, requestHandlerPath='./Requests/'):
-        asyncore.dispatcher.__init__(self)
+        Thread.__init__(self,)
+        database.init()
 
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.bind((HOSTNAME, PORT))
-        self.listen(5)
+        self.__moudles = {}
+        self.__methods = {}
+        self.__loops = []
+        self.__inits = []
 
-        self.__moudles  = {}
-        self.__methods  = {}
-        self.__loops    = []
-        self.__inits    = []
+        self.PATH = requestHandlerPath
+        self.HOSTNAME = HOSTNAME
+        self.PORT = PORT
 
-        self.PATH       = requestHandlerPath
-        self.HOSTNAME   = HOSTNAME
-        self.PORT       = PORT
-        self.CLIENTID   = 0
+    def run(self,):
+        self.__loadScripts()
 
-    def run_server(self,):
-        self._loadScripts()
+        SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        SERVER.bind((self.HOSTNAME, self.PORT))
+        SERVER.listen(5)
 
-        for init in self.__inits:
-            init()
+        print("Server started on main thread")
 
         for loop in self.__loops:
             Thread(target=loop).start()
 
-        print("Server started on main thread")
-        asyncore.loop(timeout=0.2, use_poll=True)
+        for init in self.__inits:
+            init()
 
+        while True:
+            client_socket, client_address = SERVER.accept()
+            RemoteClient(client_socket, client_address, self).start()
 
-    def _loadScripts(self,):
+    def __loadScripts(self,):
         scripts = [x for x in os.listdir(self.PATH) if x[-3:] == '.py']
 
         for script in scripts:
@@ -65,12 +61,6 @@ class GameServer(asyncore.dispatcher):
                         self.__methods[method] = []
                     self.__methods[method].append(getattr(objectModule, method))
 
-    def handle_accept(self):
-        pair = self.accept()
-        if pair is not None:
-            sockt, address = pair
-            RemoteClient(sockt, address, self.processClientEvents, self.processClientRequest).handle_connect()
-
     def processClientEvents(self, client, event):
         if event in self.__methods:
             for method in self.__methods[event]:
@@ -87,62 +77,112 @@ class GameServer(asyncore.dispatcher):
 
 
 
-class RemoteClient(asyncore.dispatcher_with_send):
-    def __init__(self, socket, address, on_event, on_request):
-        asyncore.dispatcher_with_send.__init__(self, sock=socket)
+class RemoteClient():
+    clientID = 0
+    def __init__(self, socket, address, kernel):
+        self._stack = []
+        RemoteClient.clientID += 1
+        self.clientID = RemoteClient.clientID
+        self._sendThrd = Thread(target=self.rceving_thread)
+        self._rcevThrd = Thread(target=self.sending_thread)
+        self._active   = True
 
-        self.DATA           = {}
-        self.address        = address
-        self._on_event      = on_event
-        self._on_request    = on_request
-        self._recv_buffer   = bytes('', 'ascii')
-        self._send_buffer   = bytes('', 'ascii')
-        self.TOKEN          = str(secrets.token_hex(16))
+        self.TOKEN      = str(secrets.token_hex(16))
+
+        self._socket    = socket
+        self._kernel    = kernel
+
+        self.DATA       = {}
+        self.address    = address
 
     def __eq__(self, other):
         return self.TOKEN == other.TOKEN
 
-    def writable(self):
-        return len(self._send_buffer) > 0
+    def __hash__(self):
+        return hash(self.TOKEN)
 
-    def handle_write(self):
-        sent = self.send(self._send_buffer)
+    def start(self,):
+        self.on_client_connect()
+        self._socket.settimeout(5)
 
-        if sent is None:
-            self._send_buffer = bytes('', 'ascii')
-        else:
-            self._send_buffer = self._send_buffer[sent:]
+        self._rcevThrd.start()
+        self._sendThrd.start()
 
-    def handle_read(self):
+    def on_client_connect(self,):
+        self._kernel.processClientEvents(self, "onConnectionStarted")
+
+    def on_client_timeout(self,):
+        self._kernel.processClientEvents(self, "onConnectionTimeout")
+
+    def on_client_disconnect(self,):
+        self._kernel.processClientEvents(self, "onConnectionEnded")
+        self._active = False
+        self._socket.close()
+
+
+    def rceving_thread(self,):
+        while self._active:
+            requests = self.recv_data()
+
+            if requests is "TIMEOUT":
+                continue
+
+            if requests is not None:
+                for request in requests:
+                    self.process_request(request)
+
+
+    def sending_thread(self,):
+        while self._active:
+            try:
+                if len(self._stack) == 0:
+                    time.sleep(0.02)
+                else:
+                    json_form = ""
+                    for request_dict in self._stack:
+                        json_form += json.dumps(request_dict) + "<EOF>"
+                    valid_socket_form = json_form.encode('ascii')
+                    self._socket.sendall(valid_socket_form)
+                    self._stack = []
+            except Exception as e:
+                self.on_client_disconnect()
+
+
+    def send_data(self, data_dict):
+        self._stack.append(data_dict)
+
+    def recv_data(self,):
+        """ This function will return a list of valid socket segments transmitted over the network """
+
+        frame, eof = bytes('', 'ascii'), '<EOF>'
         try:
-            data = self.recv(4096)
+            while not frame.endswith(bytes(eof, 'ascii')):
+                tmp_frame = self._socket.recv(1024)
+                frame += tmp_frame
 
-            if not data: return
-            self._recv_buffer += data
-            if not data.endswith(bytes('<EOF>', 'ascii')): return
+                if tmp_frame is None or len(tmp_frame) == 0:
+                    if len(frame) > 0:
+                        break
+                    else:
+                        raise Exception("CLIENT DISCONNECTED")
 
-            for request in self._recv_buffer.decode('ascii').split('<EOF>'):
-                if len(request) > 0:
-                    request = json.loads(request)
-                    if 'TYPE' in request: self._on_request(self, request)
-            self._recv_buffer = bytes('', 'ascii')
+        except timeout as e:
+            self.on_client_timeout()
+            return "TIMEOUT"
         except Exception as e:
-            pass
+            self.on_client_disconnect()
+            return None
 
-    def send_data(self, request_dict):
-        marked_request      = json.dumps(request_dict) + "<EOF>"
-        request_bytes       = marked_request.encode('ascii')
-        self._send_buffer   = self._send_buffer + request_bytes
+        string_frames = []
+        for single_frame in frame.decode('ascii').split(eof):
+            try:
+                string_frames.append(json.loads(single_frame))
+            except Exception as e:
+                continue
+        return string_frames
 
-        sent = self.send(self._send_buffer)
-        if sent is None:
-            self._send_buffer = bytes('', 'ascii')
+    def process_request(self, request):
+        if not 'TYPE' in request:
+            return
         else:
-            self._send_buffer = self._send_buffer[sent:]
-
-    def handle_connect(self,):
-        self._on_event(self, "onConnectionStarted")
-
-    def handle_close(self,):
-        self._on_event(self, "onConnectionEnded")
-        self.close()
+            self._kernel.processClientRequest(self, request)
