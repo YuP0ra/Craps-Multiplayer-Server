@@ -103,7 +103,7 @@ class RemoteClient():
 
     def start(self,):
         self.on_client_connect()
-        self._socket.settimeout(5)
+        self._socket.settimeout(30)
 
         self._rcevThrd.start()
         self._sendThrd.start()
@@ -157,7 +157,7 @@ class RemoteClient():
         frame, eof = bytes('', 'ascii'), '<EOF>'
         try:
             while not frame.endswith(bytes(eof, 'ascii')):
-                tmp_frame = self._socket.recv(1024)
+                tmp_frame = self._socket.recv(2048)
                 frame += tmp_frame
 
                 if tmp_frame is None or len(tmp_frame) == 0:
@@ -183,6 +183,6 @@ class RemoteClient():
 
     def process_request(self, request):
         if not 'TYPE' in request:
-            return
+            return None
         else:
             self._kernel.processClientRequest(self, request)
