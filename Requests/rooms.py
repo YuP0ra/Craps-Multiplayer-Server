@@ -11,10 +11,10 @@ tokensDB, crapsRooms, crapsRoomsTable, roomAllowedBets = {}, {}, {}, {}
 
 ################################################################################
 def init():
-    for i, roomName in enumerate(get('roomsInfo')['rooms_name']):
+    for i, roomName in enumerate(get('roomsInfo')['ROOMS_NAME']):
         crapsRooms[roomName] = []
-        crapsRoomsTable[roomName] = CrapsTable(get('roomsInfo')['rooms_bet_arr'][i])
-        roomAllowedBets[roomName] = get('roomsInfo')['rooms_bet_arr'][i]
+        crapsRoomsTable[roomName] = CrapsTable(get('roomsInfo')['ROOMS_CHIPS'][i])
+        roomAllowedBets[roomName] = get('roomsInfo')['ROOMS_CHIPS'][i]
         Thread(target=runRoom,
                args=(roomName, crapsRooms[roomName], crapsRoomsTable[roomName])
                ).start()
@@ -73,12 +73,7 @@ def runRoom(roomName, roomPlayers, table):
 
         table.roundID += 1
 
-<<<<<<< HEAD
         finalResult = {     "TYPE"      : "ROUND_RESULT",
-=======
-        finalResult = {
-                            "TYPE"      : "ROUND_RESULT",
->>>>>>> 14ba295cb08add06408f6dac32d2d82125d8aa53
                             "TOTAL"     : str(table.roundResultsTotalWins),
                             "TOTALBETS" : str(table.TableTotalBetsList()),
                             "WIN"       : str(table.roundResultsWIN),
@@ -88,11 +83,7 @@ def runRoom(roomName, roomPlayers, table):
                             "COMEROLL"  : str(table.isComeOutRoll),
                             "MARKER"    : str(table.marker)
                          }
-<<<<<<< HEAD
 
-=======
-                         
->>>>>>> 14ba295cb08add06408f6dac32d2d82125d8aa53
         for player in roomPlayers:
             player.send_data(finalResult)
 

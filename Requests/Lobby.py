@@ -13,9 +13,9 @@ def GET_LOBBY_ROOMS(player, request):
     roomsInfo['active_players'] = [len(crapsRooms[room]) for room in crapsRooms]
     player.send_data({
                         "TYPE"  : "LOBBY_ROOMS",
-                        "NAMES" : roomsInfo['rooms_name'],
-                        "MINBET": roomsInfo['rooms_min_bet'],
-                        "MAXBET": roomsInfo['rooms_max_bet'],
+                        "NAMES" : roomsInfo['ROOMS_NAME'],
+                        "MINBET": roomsInfo['ROOMS_MIN_BET'],
+                        "MAXBET": roomsInfo['ROOMS_MAX_BET'],
                         "ACTIVE": roomsInfo['active_players']
                     })
 
