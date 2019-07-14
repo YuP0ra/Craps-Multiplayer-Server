@@ -24,7 +24,7 @@ class GameServer(Thread):
 
         SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SERVER.bind((self.HOSTNAME, self.PORT))
-        SERVER.listen(5)
+        SERVER.listen(32)
 
         print("Server started on main thread")
 
@@ -103,7 +103,7 @@ class RemoteClient():
 
     def start(self,):
         self.on_client_connect()
-        self._socket.settimeout(5)
+        self._socket.settimeout(30)
 
         self._rcevThrd.start()
         self._sendThrd.start()
@@ -157,7 +157,7 @@ class RemoteClient():
         frame, eof = bytes('', 'ascii'), '<EOF>'
         try:
             while not frame.endswith(bytes(eof, 'ascii')):
-                tmp_frame = self._socket.recv(1024)
+                tmp_frame = self._socket.recv(2048)
                 frame += tmp_frame
 
                 if tmp_frame is None or len(tmp_frame) == 0:
@@ -165,10 +165,9 @@ class RemoteClient():
                         break
                     else:
                         raise Exception("CLIENT DISCONNECTED")
-
-        except timeout as e:
-            self.on_client_timeout()
-            return "TIMEOUT"
+        # except timeout as e:
+        #     self.on_client_timeout()
+        #     return "TIMEOUT"
         except Exception as e:
             self.on_client_disconnect()
             return None
@@ -183,6 +182,6 @@ class RemoteClient():
 
     def process_request(self, request):
         if not 'TYPE' in request:
-            return
+            return None
         else:
             self._kernel.processClientRequest(self, request)

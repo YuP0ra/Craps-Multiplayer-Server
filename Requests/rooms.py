@@ -73,18 +73,19 @@ def runRoom(roomName, roomPlayers, table):
 
         table.roundID += 1
 
+        finalResult = {     "TYPE"      : "ROUND_RESULT",
+                            "TOTAL"     : str(table.roundResultsTotalWins),
+                            "TOTALBETS" : str(table.TableTotalBetsList()),
+                            "WIN"       : str(table.roundResultsWIN),
+                            "PUSH"      : str(table.roundResultsPUSH),
+                            "LOSE"      : str(table.roundResultsLOSE),
+                            "MOVE"      : str(table.roundResultsMOVE),
+                            "COMEROLL"  : str(table.isComeOutRoll),
+                            "MARKER"    : str(table.marker)
+                         }
+
         for player in roomPlayers:
-            player.send_data({
-                                "TYPE"      : "ROUND_RESULT",
-                                "TOTAL"     : str(table.roundResultsTotalWins),
-                                "TOTALBETS" : str(table.TableTotalBetsList()),
-                                "WIN"       : str(table.roundResultsWIN),
-                                "PUSH"      : str(table.roundResultsPUSH),
-                                "LOSE"      : str(table.roundResultsLOSE),
-                                "MOVE"      : str(table.roundResultsMOVE),
-                                "COMEROLL"  : str(table.isComeOutRoll),
-                                "MARKER"    : str(table.marker)
-                             })
+            player.send_data(finalResult)
 
         CALCULATIONS_TIME = 5 + len(table.roundResultsWIN) * .25
         ############ Animation Ends
