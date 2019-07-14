@@ -127,9 +127,10 @@ def JOIN_ROOM_REQUEST(player, request):
         return
 
     if request['SERVERID'] == "" or request['SERVERID'] == "0":
-        print("Invalid serverID to join room")
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
         return
+
+    LEAVE_ROOM_REQUEST(player, None)
 
     if player in crapsRooms[request['ROOM_NAME']]:
         player.send_data({"TYPE":"ROOM_JOIN_FAILD"})
